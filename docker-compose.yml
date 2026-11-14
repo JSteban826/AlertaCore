@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: alertacore-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: alertacore
+      POSTGRES_USER: alertacore
+      POSTGRES_PASSWORD: alertacore_local
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - alertacore_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alertacore -d alertacore"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  alertacore_postgres_data:

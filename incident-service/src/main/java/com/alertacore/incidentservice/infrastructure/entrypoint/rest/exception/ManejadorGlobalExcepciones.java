@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.LinkedHashMap;
+import com.alertacore.incidentservice.domain.exception.ServicioMeteorologicoException;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -46,6 +47,24 @@ public class ManejadorGlobalExcepciones {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
+    @ExceptionHandler(ServicioMeteorologicoException.class)
+    public ResponseEntity<ErrorResponse>
+    manejarServicioMeteorologico(
+            ServicioMeteorologicoException excepcion,
+            HttpServletRequest request
+    ) {
+
+        ErrorResponse error = ErrorResponse.crear(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "SERVICIO_METEOROLOGICO_NO_DISPONIBLE",
+                excepcion.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(error);
     }
 

@@ -1,13 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
 
-import com.alertacore.incidentservice.application.dto.PaginaIncidentesResultado;
-import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
-import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
-import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ListarIncidentesPort;
-import com.alertacore.incidentservice.application.port.in.RegistrarIncidentePort;
+import com.alertacore.incidentservice.application.dto.*;
+import com.alertacore.incidentservice.application.port.in.*;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.CambiarEstadoIncidenteRequest;
@@ -15,19 +9,12 @@ import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.Cla
 import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.RegistrarIncidenteRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import com.alertacore.incidentservice.application.dto.RegistroLineaTiempoResultado;
-import com.alertacore.incidentservice.application.port.in.ConsultarLineaTiempoPort;
+import org.springframework.web.bind.annotation.*;
+import com.alertacore.incidentservice.application.dto.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
 
-import java.util.List;
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -41,44 +28,67 @@ public class IncidenteController {
     private final ListarIncidentesPort listarIncidentes;
     private final ClasificarIncidentePort clasificarIncidente;
     private final CambiarEstadoIncidentePort cambiarEstadoIncidente;
+    private final ConsultarEstadisticasIncidentesPort  consultarEstadisticas;
+    private final ConsultarRiesgoMeteorologicoPort
+            consultarRiesgoMeteorologico;
 
     public IncidenteController(
             RegistrarIncidentePort registrarIncidente,
             ConsultarIncidentePort consultarIncidente,
             ConsultarLineaTiempoPort consultarLineaTiempo,
             ListarIncidentesPort listarIncidentes,
+            ConsultarEstadisticasIncidentesPort consultarEstadisticas,
+            ConsultarRiesgoMeteorologicoPort consultarRiesgoMeteorologico,
             ClasificarIncidentePort clasificarIncidente,
             CambiarEstadoIncidentePort cambiarEstadoIncidente
     ) {
-        this.registrarIncidente = Objects.requireNonNull(
-                registrarIncidente,
-                "El caso de uso para registrar es obligatorio"
-        );
+        this.registrarIncidente =
+                Objects.requireNonNull(
+                        registrarIncidente,
+                        "El caso de uso para registrar es obligatorio"
+                );
 
-        this.consultarIncidente = Objects.requireNonNull(
-                consultarIncidente,
-                "El caso de uso para consultar es obligatorio"
-        );
+        this.consultarIncidente =
+                Objects.requireNonNull(
+                        consultarIncidente,
+                        "El caso de uso para consultar es obligatorio"
+                );
 
-        this.consultarLineaTiempo = Objects.requireNonNull(
-                consultarLineaTiempo,
-                "El caso de uso para consultar la linea de tiempo es obligatorio"
-        );
+        this.consultarLineaTiempo =
+                Objects.requireNonNull(
+                        consultarLineaTiempo,
+                        "El caso de uso para consultar la linea de tiempo es obligatorio"
+                );
 
-        this.listarIncidentes = Objects.requireNonNull(
-                listarIncidentes,
-                "El caso de uso para listar es obligatorio"
-        );
+        this.listarIncidentes =
+                Objects.requireNonNull(
+                        listarIncidentes,
+                        "El caso de uso para listar es obligatorio"
+                );
 
-        this.clasificarIncidente = Objects.requireNonNull(
-                clasificarIncidente,
-                "El caso de uso para clasificar es obligatorio"
-        );
+        this.consultarEstadisticas =
+                Objects.requireNonNull(
+                        consultarEstadisticas,
+                        "El caso de uso de estadisticas es obligatorio"
+                );
 
-        this.cambiarEstadoIncidente = Objects.requireNonNull(
-                cambiarEstadoIncidente,
-                "El caso de uso para cambiar estado es obligatorio"
-        );
+        this.consultarRiesgoMeteorologico =
+                Objects.requireNonNull(
+                        consultarRiesgoMeteorologico,
+                        "El caso de uso meteorologico es obligatorio"
+                );
+
+        this.clasificarIncidente =
+                Objects.requireNonNull(
+                        clasificarIncidente,
+                        "El caso de uso para clasificar es obligatorio"
+                );
+
+        this.cambiarEstadoIncidente =
+                Objects.requireNonNull(
+                        cambiarEstadoIncidente,
+                        "El caso de uso para cambiar estado es obligatorio"
+                );
     }
 
     @PostMapping
@@ -180,6 +190,28 @@ public class IncidenteController {
         ResultadoIncidente resultado =
                 cambiarEstadoIncidente.ejecutar(
                         request.aComando(incidenteId)
+                );
+
+        return ResponseEntity.ok(resultado);
+    }
+    @GetMapping("/estadisticas/tiempos-respuesta")
+    public ResponseEntity<EstadisticasIncidentesResultado>
+    consultarEstadisticas() {
+
+        return ResponseEntity.ok(
+                consultarEstadisticas.ejecutar()
+        );
+    }
+    @GetMapping("/{incidenteId}/riesgo-meteorologico")
+    public ResponseEntity<RiesgoMeteorologicoResultado>
+    consultarRiesgoMeteorologico(
+            @PathVariable
+            UUID incidenteId
+    ) {
+
+        RiesgoMeteorologicoResultado resultado =
+                consultarRiesgoMeteorologico.ejecutar(
+                        incidenteId
                 );
 
         return ResponseEntity.ok(resultado);

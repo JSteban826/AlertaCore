@@ -1,31 +1,28 @@
 package com.alertacore.incidentservice.infrastructure.config;
 
-import com.alertacore.incidentservice.application.usecase.CambiarEstadoIncidenteUseCase;
-import com.alertacore.incidentservice.application.usecase.ClasificarIncidenteUseCase;
-import com.alertacore.incidentservice.application.usecase.RegistrarIncidenteUseCase;
+import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
+import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
+import com.alertacore.incidentservice.application.usecase.*;
+import com.alertacore.incidentservice.domain.port.out.RepositorioEstadisticasIncidentePort;
+import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
 import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
-import com.alertacore.incidentservice.domain.service.CalculadoraRiesgo;
-import com.alertacore.incidentservice.domain.service.ReglaAccesoDificil;
-import com.alertacore.incidentservice.domain.service.ReglaCantidadAfectados;
-import com.alertacore.incidentservice.domain.service.ReglaIncendio;
-import com.alertacore.incidentservice.domain.service.ReglaInundacion;
-import com.alertacore.incidentservice.domain.service.ReglaLluviaIntensa;
-import com.alertacore.incidentservice.domain.service.ReglaPersonasHeridas;
-import com.alertacore.incidentservice.domain.service.ReglaRiesgo;
+import com.alertacore.incidentservice.domain.port.out.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.service.*;
+import com.alertacore.incidentservice.infrastructure.persistence.adapter.EstadisticasIncidentePersistenceAdapter;
+import com.alertacore.incidentservice.infrastructure.persistence.adapter.HistorialEstadoPersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.IncidentePersistenceAdapter;
+import com.alertacore.incidentservice.infrastructure.persistence.mapper.HistorialEstadoPersistenceMapper;
 import com.alertacore.incidentservice.infrastructure.persistence.mapper.IncidentePersistenceMapper;
+import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaEstadisticasIncidenteRepository;
+import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaHistorialEstadoRepository;
 import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaIncidenteRepository;
+import com.alertacore.incidentservice.infrastructure.transaction.CambiarEstadoTransaccional;
+import com.alertacore.incidentservice.infrastructure.transaction.ClasificarIncidenteTransaccional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.alertacore.incidentservice.application.usecase.ConsultarIncidenteUseCase;
-import java.util.List;
-import com.alertacore.incidentservice.application.usecase.ListarIncidentesUseCase;
-import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.infrastructure.persistence.adapter.HistorialEstadoPersistenceAdapter;
-import com.alertacore.incidentservice.infrastructure.persistence.mapper.HistorialEstadoPersistenceMapper;
-import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaHistorialEstadoRepository;
-import com.alertacore.incidentservice.application.usecase.ConsultarLineaTiempoUseCase;
+import org.springframework.context.annotation.Primary;
 
+import java.util.List;
 
 @Configuration
 public class UseCaseConfig {
@@ -43,6 +40,24 @@ public class UseCaseConfig {
         return new IncidentePersistenceAdapter(
                 repositorioJpa,
                 mapper
+        );
+    }
+    @Bean
+    @Primary
+    public ClasificarIncidentePort clasificarIncidenteTransaccional(
+            ClasificarIncidenteUseCase casoUso
+    ) {
+        return new ClasificarIncidenteTransaccional(
+                casoUso
+        );
+    }
+    @Bean
+    @Primary
+    public CambiarEstadoIncidentePort cambiarEstadoTransaccional(
+            CambiarEstadoIncidenteUseCase casoUso
+    ) {
+        return new CambiarEstadoTransaccional(
+                casoUso
         );
     }
 
@@ -137,6 +152,36 @@ public class UseCaseConfig {
         return new ConsultarLineaTiempoUseCase(
                 repositorioIncidente,
                 repositorioHistorial
+        );
+    }
+    @Bean
+    public RepositorioEstadisticasIncidentePort
+    repositorioEstadisticasIncidentePort(
+            JpaEstadisticasIncidenteRepository repositorioJpa
+    ) {
+        return new EstadisticasIncidentePersistenceAdapter(
+                repositorioJpa
+        );
+    }
+
+    @Bean
+    public ConsultarEstadisticasIncidentesUseCase
+    consultarEstadisticasIncidentesUseCase(
+            RepositorioEstadisticasIncidentePort repositorio
+    ) {
+        return new ConsultarEstadisticasIncidentesUseCase(
+                repositorio
+        );
+    }
+    @Bean
+    public ConsultarRiesgoMeteorologicoUseCase
+    consultarRiesgoMeteorologicoUseCase(
+            RepositorioIncidentePort repositorioIncidente,
+            ServicioMeteorologicoPort servicioMeteorologico
+    ) {
+        return new ConsultarRiesgoMeteorologicoUseCase(
+                repositorioIncidente,
+                servicioMeteorologico
         );
     }
 

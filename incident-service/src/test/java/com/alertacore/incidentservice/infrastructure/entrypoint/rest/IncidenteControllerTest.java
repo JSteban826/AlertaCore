@@ -2,9 +2,11 @@ package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
 
 import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
 import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
+import com.alertacore.incidentservice.application.dto.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.application.port.in.*;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
+import com.alertacore.incidentservice.domain.enums.NivelRiesgoMeteorologico;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.exception.TransicionEstadoInvalidaException;
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
 
 class IncidenteControllerTest {
 
@@ -32,7 +35,10 @@ class IncidenteControllerTest {
     private ListarIncidentesPort listarIncidentes;
     private ClasificarIncidentePort clasificarIncidente;
     private CambiarEstadoIncidentePort cambiarEstadoIncidente;
-
+    private ConsultarEstadisticasIncidentesPort
+            consultarEstadisticas;
+    private ConsultarRiesgoMeteorologicoPort
+            consultarRiesgoMeteorologico;
     private MockMvc mockMvc;
     @BeforeEach
     void configurar() {
@@ -48,6 +54,16 @@ class IncidenteControllerTest {
         listarIncidentes =
                 mock(ListarIncidentesPort.class);
 
+        consultarEstadisticas =
+                mock(
+                        ConsultarEstadisticasIncidentesPort.class
+                );
+
+        consultarRiesgoMeteorologico =
+                mock(
+                        ConsultarRiesgoMeteorologicoPort.class
+                );
+
         clasificarIncidente =
                 mock(ClasificarIncidentePort.class);
 
@@ -60,6 +76,8 @@ class IncidenteControllerTest {
                         consultarIncidente,
                         consultarLineaTiempo,
                         listarIncidentes,
+                        consultarEstadisticas,
+                        consultarRiesgoMeteorologico,
                         clasificarIncidente,
                         cambiarEstadoIncidente
                 );
@@ -71,6 +89,7 @@ class IncidenteControllerTest {
                 )
                 .build();
     }
+
 
     @Test
     void debeRegistrarIncidenteYResponder201()
@@ -515,6 +534,62 @@ class IncidenteControllerTest {
                 .andExpect(
                         jsonPath("$.erroresValidacion.motivo")
                                 .exists()
+                );
+    }
+    @Test
+    void debeConsultarRiesgoMeteorologicoYResponder200()
+            throws Exception {
+
+        UUID id = UUID.randomUUID();
+        LocalDateTime fecha = LocalDateTime.now();
+
+        RiesgoMeteorologicoResultado resultado =
+                new RiesgoMeteorologicoResultado(
+                        id,
+                        4.6579,
+                        -74.0596,
+                        15.4,
+                        8.2,
+                        8.2,
+                        0,
+                        12.5,
+                        63,
+                        true,
+                        NivelRiesgoMeteorologico.ALTO,
+                        fecha,
+                        "Open-Meteo"
+                );
+
+        when(
+                consultarRiesgoMeteorologico.ejecutar(id)
+        ).thenReturn(resultado);
+
+        mockMvc.perform(
+                        get(
+                                "/api/v1/incidentes/{id}/riesgo-meteorologico",
+                                id
+                        )
+                )
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.incidenteId")
+                                .value(id.toString())
+                )
+                .andExpect(
+                        jsonPath("$.precipitacionMilimetros")
+                                .value(8.2)
+                )
+                .andExpect(
+                        jsonPath("$.lluviaIntensa")
+                                .value(true)
+                )
+                .andExpect(
+                        jsonPath("$.nivelRiesgoMeteorologico")
+                                .value("ALTO")
+                )
+                .andExpect(
+                        jsonPath("$.fuente")
+                                .value("Open-Meteo")
                 );
     }
 }

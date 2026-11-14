@@ -20,6 +20,11 @@ import org.springframework.context.annotation.Configuration;
 import com.alertacore.incidentservice.application.usecase.ConsultarIncidenteUseCase;
 import java.util.List;
 import com.alertacore.incidentservice.application.usecase.ListarIncidentesUseCase;
+import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
+import com.alertacore.incidentservice.infrastructure.persistence.adapter.HistorialEstadoPersistenceAdapter;
+import com.alertacore.incidentservice.infrastructure.persistence.mapper.HistorialEstadoPersistenceMapper;
+import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaHistorialEstadoRepository;
+import com.alertacore.incidentservice.application.usecase.ConsultarLineaTiempoUseCase;
 
 
 @Configuration
@@ -67,11 +72,13 @@ public class UseCaseConfig {
 
     @Bean
     public ClasificarIncidenteUseCase clasificarIncidenteUseCase(
-            RepositorioIncidentePort repositorio,
+            RepositorioIncidentePort repositorioIncidente,
+            RepositorioHistorialEstadoPort repositorioHistorial,
             CalculadoraRiesgo calculadoraRiesgo
     ) {
         return new ClasificarIncidenteUseCase(
-                repositorio,
+                repositorioIncidente,
+                repositorioHistorial,
                 calculadoraRiesgo
         );
     }
@@ -90,14 +97,47 @@ public class UseCaseConfig {
     ) {
         return new ListarIncidentesUseCase(repositorio);
     }
+    @Bean
+    public HistorialEstadoPersistenceMapper
+    historialEstadoPersistenceMapper() {
+        return new HistorialEstadoPersistenceMapper();
+    }
 
+    @Bean
+    public RepositorioHistorialEstadoPort
+    repositorioHistorialEstadoPort(
+            JpaHistorialEstadoRepository
+                    repositorioHistorialJpa,
+            JpaIncidenteRepository
+                    repositorioIncidenteJpa,
+            HistorialEstadoPersistenceMapper mapper
+    ) {
+        return new HistorialEstadoPersistenceAdapter(
+                repositorioHistorialJpa,
+                repositorioIncidenteJpa,
+                mapper
+        );
+    }
 
     @Bean
     public CambiarEstadoIncidenteUseCase cambiarEstadoIncidenteUseCase(
-            RepositorioIncidentePort repositorio
+            RepositorioIncidentePort repositorioIncidente,
+            RepositorioHistorialEstadoPort repositorioHistorial
     ) {
         return new CambiarEstadoIncidenteUseCase(
-                repositorio
+                repositorioIncidente,
+                repositorioHistorial
         );
     }
+    @Bean
+    public ConsultarLineaTiempoUseCase consultarLineaTiempoUseCase(
+            RepositorioIncidentePort repositorioIncidente,
+            RepositorioHistorialEstadoPort repositorioHistorial
+    ) {
+        return new ConsultarLineaTiempoUseCase(
+                repositorioIncidente,
+                repositorioHistorial
+        );
+    }
+
 }

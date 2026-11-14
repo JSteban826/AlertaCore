@@ -9,7 +9,9 @@ import com.alertacore.incidentservice.domain.exception.TransicionEstadoInvalidaE
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
+import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
+import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
 import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.when;
 class CambiarEstadoIncidenteUseCaseTest {
 
     private RepositorioIncidentePort repositorio;
+    private RepositorioHistorialEstadoPort repositorioHistorial;
     private CambiarEstadoIncidenteUseCase casoUso;
 
     @BeforeEach
@@ -38,8 +41,13 @@ class CambiarEstadoIncidenteUseCaseTest {
                 RepositorioIncidentePort.class
         );
 
+        repositorioHistorial = mock(
+                RepositorioHistorialEstadoPort.class
+        );
+
         casoUso = new CambiarEstadoIncidenteUseCase(
-                repositorio
+                repositorio,
+                repositorioHistorial
         );
     }
 
@@ -54,6 +62,14 @@ class CambiarEstadoIncidenteUseCaseTest {
                 .thenAnswer(invocacion ->
                         invocacion.getArgument(0)
                 );
+
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
 
         CambiarEstadoIncidenteCommand comando =
                 new CambiarEstadoIncidenteCommand(
@@ -75,6 +91,11 @@ class CambiarEstadoIncidenteUseCaseTest {
 
         verify(repositorio)
                 .guardar(incidente);
+
+        verify(repositorioHistorial)
+                .guardar(
+                        any(RegistroHistorialEstado.class)
+                );
     }
 
     @Test
@@ -89,6 +110,14 @@ class CambiarEstadoIncidenteUseCaseTest {
                         invocacion.getArgument(0)
                 );
 
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
+
         CambiarEstadoIncidenteCommand comando =
                 new CambiarEstadoIncidenteCommand(
                         incidente.getId(),
@@ -99,9 +128,7 @@ class CambiarEstadoIncidenteUseCaseTest {
         casoUso.ejecutar(comando);
 
         ArgumentCaptor<Incidente> captor =
-                ArgumentCaptor.forClass(
-                        Incidente.class
-                );
+                ArgumentCaptor.forClass(Incidente.class);
 
         verify(repositorio)
                 .guardar(captor.capture());
@@ -116,8 +143,8 @@ class CambiarEstadoIncidenteUseCaseTest {
     }
 
     @Test
-    void debeCambiarIncidenteClasificadoARecursoAsignado() {
-        Incidente incidente = crearIncidenteClasificado();
+    void debeGuardarHistorialAlCambiarEstado() {
+        Incidente incidente = crearIncidenteReportado();
 
         when(repositorio.buscarPorId(incidente.getId()))
                 .thenReturn(Optional.of(incidente));
@@ -126,6 +153,81 @@ class CambiarEstadoIncidenteUseCaseTest {
                 .thenAnswer(invocacion ->
                         invocacion.getArgument(0)
                 );
+
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
+
+        CambiarEstadoIncidenteCommand comando =
+                new CambiarEstadoIncidenteCommand(
+                        incidente.getId(),
+                        EstadoIncidente.VALIDADO,
+                        "La informacion fue verificada"
+                );
+
+        casoUso.ejecutar(comando);
+
+        ArgumentCaptor<RegistroHistorialEstado> captor =
+                ArgumentCaptor.forClass(
+                        RegistroHistorialEstado.class
+                );
+
+        verify(repositorioHistorial)
+                .guardar(captor.capture());
+
+        RegistroHistorialEstado registro =
+                captor.getValue();
+
+        assertEquals(
+                incidente.getId(),
+                registro.incidenteId()
+        );
+
+        assertEquals(
+                EstadoIncidente.REPORTADO,
+                registro.estadoAnterior()
+        );
+
+        assertEquals(
+                EstadoIncidente.VALIDADO,
+                registro.nuevoEstado()
+        );
+
+        assertEquals(
+                "La informacion fue verificada",
+                registro.motivo()
+        );
+
+        assertEquals(
+                "OPERADOR_API",
+                registro.responsable()
+        );
+    }
+
+    @Test
+    void debeCambiarIncidenteClasificadoARecursoAsignado() {
+        Incidente incidente =
+                crearIncidenteClasificado();
+
+        when(repositorio.buscarPorId(incidente.getId()))
+                .thenReturn(Optional.of(incidente));
+
+        when(repositorio.guardar(any(Incidente.class)))
+                .thenAnswer(invocacion ->
+                        invocacion.getArgument(0)
+                );
+
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
 
         CambiarEstadoIncidenteCommand comando =
                 new CambiarEstadoIncidenteCommand(
@@ -141,6 +243,11 @@ class CambiarEstadoIncidenteUseCaseTest {
                 EstadoIncidente.RECURSO_ASIGNADO,
                 resultado.estado()
         );
+
+        verify(repositorioHistorial)
+                .guardar(
+                        any(RegistroHistorialEstado.class)
+                );
     }
 
     @Test
@@ -169,6 +276,8 @@ class CambiarEstadoIncidenteUseCaseTest {
                 repositorio,
                 never()
         ).guardar(any(Incidente.class));
+
+        verifyNoInteractions(repositorioHistorial);
     }
 
     @Test
@@ -197,6 +306,8 @@ class CambiarEstadoIncidenteUseCaseTest {
                 repositorio,
                 never()
         ).guardar(any(Incidente.class));
+
+        verifyNoInteractions(repositorioHistorial);
     }
 
     @Test
@@ -206,7 +317,10 @@ class CambiarEstadoIncidenteUseCaseTest {
                 () -> casoUso.ejecutar(null)
         );
 
-        verifyNoInteractions(repositorio);
+        verifyNoInteractions(
+                repositorio,
+                repositorioHistorial
+        );
     }
 
     @Test
@@ -246,10 +360,22 @@ class CambiarEstadoIncidenteUseCaseTest {
     }
 
     @Test
-    void debeRechazarRepositorioNulo() {
+    void debeRechazarRepositorioIncidenteNulo() {
         assertThrows(
                 NullPointerException.class,
                 () -> new CambiarEstadoIncidenteUseCase(
+                        null,
+                        repositorioHistorial
+                )
+        );
+    }
+
+    @Test
+    void debeRechazarRepositorioHistorialNulo() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new CambiarEstadoIncidenteUseCase(
+                        repositorio,
                         null
                 )
         );
@@ -280,9 +406,11 @@ class CambiarEstadoIncidenteUseCaseTest {
     }
 
     private Incidente crearIncidenteClasificado() {
-        Incidente incidente = crearIncidenteReportado();
+        Incidente incidente =
+                crearIncidenteReportado();
 
         incidente.validar();
+
         incidente.clasificar(
                 new PuntajeRiesgo(95)
         );

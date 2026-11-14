@@ -1,9 +1,8 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
+
 import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
 import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
-import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
-import com.alertacore.incidentservice.application.port.in.RegistrarIncidentePort;
+import com.alertacore.incidentservice.application.port.in.*;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
@@ -15,27 +14,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.alertacore.incidentservice.application.port.in.ListarIncidentesPort;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 class IncidenteControllerTest {
 
     private RegistrarIncidentePort registrarIncidente;
+    private ConsultarIncidentePort consultarIncidente;
+    private ConsultarLineaTiempoPort consultarLineaTiempo;
+    private ListarIncidentesPort listarIncidentes;
     private ClasificarIncidentePort clasificarIncidente;
     private CambiarEstadoIncidentePort cambiarEstadoIncidente;
-    private ConsultarIncidentePort consultarIncidente;
-    private ListarIncidentesPort listarIncidentes;
+
     private MockMvc mockMvc;
     @BeforeEach
     void configurar() {
@@ -45,18 +42,23 @@ class IncidenteControllerTest {
         consultarIncidente =
                 mock(ConsultarIncidentePort.class);
 
+        consultarLineaTiempo =
+                mock(ConsultarLineaTiempoPort.class);
+
+        listarIncidentes =
+                mock(ListarIncidentesPort.class);
+
         clasificarIncidente =
                 mock(ClasificarIncidentePort.class);
 
         cambiarEstadoIncidente =
                 mock(CambiarEstadoIncidentePort.class);
-        listarIncidentes =
-                mock(ListarIncidentesPort.class);
 
         IncidenteController controller =
                 new IncidenteController(
                         registrarIncidente,
                         consultarIncidente,
+                        consultarLineaTiempo,
                         listarIncidentes,
                         clasificarIncidente,
                         cambiarEstadoIncidente
@@ -69,7 +71,6 @@ class IncidenteControllerTest {
                 )
                 .build();
     }
-
 
     @Test
     void debeRegistrarIncidenteYResponder201()

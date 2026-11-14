@@ -3,9 +3,12 @@ package com.alertacore.incidentservice.application.usecase;
 import com.alertacore.incidentservice.application.command.ClasificarIncidenteCommand;
 import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
+import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
+import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
+import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
 import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
 import com.alertacore.incidentservice.domain.service.CalculadoraRiesgo;
 import com.alertacore.incidentservice.domain.service.ContextoRiesgo;
@@ -15,16 +18,29 @@ import java.util.Objects;
 public final class ClasificarIncidenteUseCase
         implements ClasificarIncidentePort {
 
-    private final RepositorioIncidentePort repositorio;
+    private static final String MOTIVO_CLASIFICACION =
+            "Clasificacion automatica de riesgo";
+
+    private static final String RESPONSABLE_CLASIFICACION =
+            "SISTEMA_CLASIFICACION";
+
+    private final RepositorioIncidentePort repositorioIncidente;
+    private final RepositorioHistorialEstadoPort repositorioHistorial;
     private final CalculadoraRiesgo calculadoraRiesgo;
 
     public ClasificarIncidenteUseCase(
-            RepositorioIncidentePort repositorio,
+            RepositorioIncidentePort repositorioIncidente,
+            RepositorioHistorialEstadoPort repositorioHistorial,
             CalculadoraRiesgo calculadoraRiesgo
     ) {
-        this.repositorio = Objects.requireNonNull(
-                repositorio,
+        this.repositorioIncidente = Objects.requireNonNull(
+                repositorioIncidente,
                 "El repositorio de incidentes es obligatorio"
+        );
+
+        this.repositorioHistorial = Objects.requireNonNull(
+                repositorioHistorial,
+                "El repositorio de historial es obligatorio"
         );
 
         this.calculadoraRiesgo = Objects.requireNonNull(
@@ -42,13 +58,16 @@ public final class ClasificarIncidenteUseCase
                 "El comando de clasificacion es obligatorio"
         );
 
-        Incidente incidente = repositorio
+        Incidente incidente = repositorioIncidente
                 .buscarPorId(comando.incidenteId())
                 .orElseThrow(
                         () -> new IncidenteNoEncontradoException(
                                 comando.incidenteId()
                         )
                 );
+
+        EstadoIncidente estadoAnterior =
+                incidente.getEstado();
 
         ContextoRiesgo contexto = new ContextoRiesgo(
                 incidente.getTipo(),
@@ -64,7 +83,18 @@ public final class ClasificarIncidenteUseCase
         incidente.clasificar(puntaje);
 
         Incidente incidenteGuardado =
-                repositorio.guardar(incidente);
+                repositorioIncidente.guardar(incidente);
+
+        RegistroHistorialEstado registro =
+                RegistroHistorialEstado.crear(
+                        incidenteGuardado.getId(),
+                        estadoAnterior,
+                        incidenteGuardado.getEstado(),
+                        MOTIVO_CLASIFICACION,
+                        RESPONSABLE_CLASIFICACION
+                );
+
+        repositorioHistorial.guardar(registro);
 
         return ResultadoClasificacion.desde(
                 incidenteGuardado

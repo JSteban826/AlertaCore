@@ -9,9 +9,18 @@ import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoExce
 import com.alertacore.incidentservice.domain.exception.TransicionEstadoInvalidaException;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
+import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
+import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
 import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
-import com.alertacore.incidentservice.domain.service.*;
+import com.alertacore.incidentservice.domain.service.CalculadoraRiesgo;
+import com.alertacore.incidentservice.domain.service.ReglaAccesoDificil;
+import com.alertacore.incidentservice.domain.service.ReglaCantidadAfectados;
+import com.alertacore.incidentservice.domain.service.ReglaIncendio;
+import com.alertacore.incidentservice.domain.service.ReglaInundacion;
+import com.alertacore.incidentservice.domain.service.ReglaLluviaIntensa;
+import com.alertacore.incidentservice.domain.service.ReglaPersonasHeridas;
+import com.alertacore.incidentservice.domain.service.ReglaRiesgo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,12 +42,19 @@ import static org.mockito.Mockito.when;
 class ClasificarIncidenteUseCaseTest {
 
     private RepositorioIncidentePort repositorio;
+    private RepositorioHistorialEstadoPort repositorioHistorial;
     private CalculadoraRiesgo calculadora;
     private ClasificarIncidenteUseCase casoUso;
 
     @BeforeEach
     void configurar() {
-        repositorio = mock(RepositorioIncidentePort.class);
+        repositorio = mock(
+                RepositorioIncidentePort.class
+        );
+
+        repositorioHistorial = mock(
+                RepositorioHistorialEstadoPort.class
+        );
 
         List<ReglaRiesgo> reglas = List.of(
                 new ReglaPersonasHeridas(),
@@ -49,17 +65,21 @@ class ClasificarIncidenteUseCaseTest {
                 new ReglaAccesoDificil()
         );
 
-        calculadora = new CalculadoraRiesgo(reglas);
+        calculadora = new CalculadoraRiesgo(
+                reglas
+        );
 
         casoUso = new ClasificarIncidenteUseCase(
                 repositorio,
+                repositorioHistorial,
                 calculadora
         );
     }
 
     @Test
     void debeClasificarIncidenteCritico() {
-        Incidente incidente = crearIncidenteValidado();
+        Incidente incidente =
+                crearIncidenteValidado();
 
         when(repositorio.buscarPorId(incidente.getId()))
                 .thenReturn(Optional.of(incidente));
@@ -68,6 +88,14 @@ class ClasificarIncidenteUseCaseTest {
                 .thenAnswer(invocacion ->
                         invocacion.getArgument(0)
                 );
+
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
 
         ClasificarIncidenteCommand comando =
                 new ClasificarIncidenteCommand(
@@ -109,11 +137,17 @@ class ClasificarIncidenteUseCaseTest {
 
         verify(repositorio)
                 .guardar(incidente);
+
+        verify(repositorioHistorial)
+                .guardar(
+                        any(RegistroHistorialEstado.class)
+                );
     }
 
     @Test
     void debeGuardarIncidenteClasificado() {
-        Incidente incidente = crearIncidenteValidado();
+        Incidente incidente =
+                crearIncidenteValidado();
 
         when(repositorio.buscarPorId(incidente.getId()))
                 .thenReturn(Optional.of(incidente));
@@ -122,6 +156,14 @@ class ClasificarIncidenteUseCaseTest {
                 .thenAnswer(invocacion ->
                         invocacion.getArgument(0)
                 );
+
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
 
         ClasificarIncidenteCommand comando =
                 new ClasificarIncidenteCommand(
@@ -133,7 +175,9 @@ class ClasificarIncidenteUseCaseTest {
         casoUso.ejecutar(comando);
 
         ArgumentCaptor<Incidente> captor =
-                ArgumentCaptor.forClass(Incidente.class);
+                ArgumentCaptor.forClass(
+                        Incidente.class
+                );
 
         verify(repositorio)
                 .guardar(captor.capture());
@@ -164,6 +208,73 @@ class ClasificarIncidenteUseCaseTest {
     }
 
     @Test
+    void debeGuardarHistorialAlClasificarIncidente() {
+        Incidente incidente =
+                crearIncidenteValidado();
+
+        when(repositorio.buscarPorId(incidente.getId()))
+                .thenReturn(Optional.of(incidente));
+
+        when(repositorio.guardar(any(Incidente.class)))
+                .thenAnswer(invocacion ->
+                        invocacion.getArgument(0)
+                );
+
+        when(
+                repositorioHistorial.guardar(
+                        any(RegistroHistorialEstado.class)
+                )
+        ).thenAnswer(invocacion ->
+                invocacion.getArgument(0)
+        );
+
+        ClasificarIncidenteCommand comando =
+                new ClasificarIncidenteCommand(
+                        incidente.getId(),
+                        true,
+                        true
+                );
+
+        casoUso.ejecutar(comando);
+
+        ArgumentCaptor<RegistroHistorialEstado> captor =
+                ArgumentCaptor.forClass(
+                        RegistroHistorialEstado.class
+                );
+
+        verify(repositorioHistorial)
+                .guardar(captor.capture());
+
+        RegistroHistorialEstado registro =
+                captor.getValue();
+
+        assertEquals(
+                incidente.getId(),
+                registro.incidenteId()
+        );
+
+        assertEquals(
+                EstadoIncidente.VALIDADO,
+                registro.estadoAnterior()
+        );
+
+        assertEquals(
+                EstadoIncidente.CLASIFICADO,
+                registro.nuevoEstado()
+        );
+
+        assertEquals(
+                "Clasificacion automatica de riesgo",
+                registro.motivo()
+        );
+
+        assertEquals(
+                "SISTEMA_CLASIFICACION",
+                registro.responsable()
+        );
+    }
+
+    @Test
     void debeLanzarExcepcionSiElIncidenteNoExiste() {
         UUID id = UUID.randomUUID();
 
@@ -182,12 +293,17 @@ class ClasificarIncidenteUseCaseTest {
                 () -> casoUso.ejecutar(comando)
         );
 
-        verify(repositorio).buscarPorId(id);
+        verify(repositorio)
+                .buscarPorId(id);
 
         verify(
                 repositorio,
                 never()
         ).guardar(any(Incidente.class));
+
+        verifyNoInteractions(
+                repositorioHistorial
+        );
     }
 
     @Test
@@ -217,6 +333,10 @@ class ClasificarIncidenteUseCaseTest {
                 repositorio,
                 never()
         ).guardar(any(Incidente.class));
+
+        verifyNoInteractions(
+                repositorioHistorial
+        );
     }
 
     @Test
@@ -226,7 +346,10 @@ class ClasificarIncidenteUseCaseTest {
                 () -> casoUso.ejecutar(null)
         );
 
-        verifyNoInteractions(repositorio);
+        verifyNoInteractions(
+                repositorio,
+                repositorioHistorial
+        );
     }
 
     @Test
@@ -242,10 +365,23 @@ class ClasificarIncidenteUseCaseTest {
     }
 
     @Test
-    void debeRechazarRepositorioNulo() {
+    void debeRechazarRepositorioIncidenteNulo() {
         assertThrows(
                 NullPointerException.class,
                 () -> new ClasificarIncidenteUseCase(
+                        null,
+                        repositorioHistorial,
+                        calculadora
+                )
+        );
+    }
+
+    @Test
+    void debeRechazarRepositorioHistorialNulo() {
+        assertThrows(
+                NullPointerException.class,
+                () -> new ClasificarIncidenteUseCase(
+                        repositorio,
                         null,
                         calculadora
                 )
@@ -258,6 +394,7 @@ class ClasificarIncidenteUseCaseTest {
                 NullPointerException.class,
                 () -> new ClasificarIncidenteUseCase(
                         repositorio,
+                        repositorioHistorial,
                         null
                 )
         );

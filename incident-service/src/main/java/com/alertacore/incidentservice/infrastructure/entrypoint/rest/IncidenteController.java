@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.alertacore.incidentservice.application.dto.RegistroLineaTiempoResultado;
+import com.alertacore.incidentservice.application.port.in.ConsultarLineaTiempoPort;
 
+import java.util.List;
 import java.net.URI;
 import java.util.Objects;
 import java.util.UUID;
@@ -34,6 +37,7 @@ public class IncidenteController {
 
     private final RegistrarIncidentePort registrarIncidente;
     private final ConsultarIncidentePort consultarIncidente;
+    private final ConsultarLineaTiempoPort consultarLineaTiempo;
     private final ListarIncidentesPort listarIncidentes;
     private final ClasificarIncidentePort clasificarIncidente;
     private final CambiarEstadoIncidentePort cambiarEstadoIncidente;
@@ -41,6 +45,7 @@ public class IncidenteController {
     public IncidenteController(
             RegistrarIncidentePort registrarIncidente,
             ConsultarIncidentePort consultarIncidente,
+            ConsultarLineaTiempoPort consultarLineaTiempo,
             ListarIncidentesPort listarIncidentes,
             ClasificarIncidentePort clasificarIncidente,
             CambiarEstadoIncidentePort cambiarEstadoIncidente
@@ -53,6 +58,11 @@ public class IncidenteController {
         this.consultarIncidente = Objects.requireNonNull(
                 consultarIncidente,
                 "El caso de uso para consultar es obligatorio"
+        );
+
+        this.consultarLineaTiempo = Objects.requireNonNull(
+                consultarLineaTiempo,
+                "El caso de uso para consultar la linea de tiempo es obligatorio"
         );
 
         this.listarIncidentes = Objects.requireNonNull(
@@ -139,6 +149,20 @@ public class IncidenteController {
         ResultadoClasificacion resultado =
                 clasificarIncidente.ejecutar(
                         request.aComando(incidenteId)
+                );
+
+        return ResponseEntity.ok(resultado);
+    }
+    @GetMapping("/{incidenteId}/linea-tiempo")
+    public ResponseEntity<List<RegistroLineaTiempoResultado>>
+    consultarLineaTiempo(
+            @PathVariable
+            UUID incidenteId
+    ) {
+
+        List<RegistroLineaTiempoResultado> resultado =
+                consultarLineaTiempo.ejecutar(
+                        incidenteId
                 );
 
         return ResponseEntity.ok(resultado);

@@ -17,8 +17,10 @@ import com.alertacore.incidentservice.infrastructure.persistence.mapper.Incident
 import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaIncidenteRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import com.alertacore.incidentservice.application.usecase.ConsultarIncidenteUseCase;
 import java.util.List;
+import com.alertacore.incidentservice.application.usecase.ListarIncidentesUseCase;
+
 
 @Configuration
 public class UseCaseConfig {
@@ -38,6 +40,7 @@ public class UseCaseConfig {
                 mapper
         );
     }
+
 
     @Bean
     public CalculadoraRiesgo calculadoraRiesgo() {
@@ -72,6 +75,22 @@ public class UseCaseConfig {
                 calculadoraRiesgo
         );
     }
+
+    @Bean
+    public ConsultarIncidenteUseCase consultarIncidenteUseCase(
+            RepositorioIncidentePort repositorio
+    ) {
+        return new ConsultarIncidenteUseCase(
+                repositorio
+        );
+    }
+    @Bean
+    public ListarIncidentesUseCase listarIncidentesUseCase(
+            RepositorioIncidentePort repositorio
+    ) {
+        return new ListarIncidentesUseCase(repositorio);
+    }
+
 
     @Bean
     public CambiarEstadoIncidenteUseCase cambiarEstadoIncidenteUseCase(

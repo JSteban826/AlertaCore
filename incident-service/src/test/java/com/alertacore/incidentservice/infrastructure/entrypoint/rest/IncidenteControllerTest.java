@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import com.alertacore.incidentservice.application.port.in.ListarIncidentesPort;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,28 +27,37 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 class IncidenteControllerTest {
 
     private RegistrarIncidentePort registrarIncidente;
     private ClasificarIncidentePort clasificarIncidente;
     private CambiarEstadoIncidentePort cambiarEstadoIncidente;
-
+    private ConsultarIncidentePort consultarIncidente;
+    private ListarIncidentesPort listarIncidentes;
     private MockMvc mockMvc;
     @BeforeEach
     void configurar() {
         registrarIncidente =
                 mock(RegistrarIncidentePort.class);
 
+        consultarIncidente =
+                mock(ConsultarIncidentePort.class);
+
         clasificarIncidente =
                 mock(ClasificarIncidentePort.class);
 
         cambiarEstadoIncidente =
                 mock(CambiarEstadoIncidentePort.class);
+        listarIncidentes =
+                mock(ListarIncidentesPort.class);
 
         IncidenteController controller =
                 new IncidenteController(
                         registrarIncidente,
+                        consultarIncidente,
+                        listarIncidentes,
                         clasificarIncidente,
                         cambiarEstadoIncidente
                 );
@@ -178,6 +187,93 @@ class IncidenteControllerTest {
                 .andExpect(
                         jsonPath("$.erroresValidacion.correoReportante")
                                 .exists()
+                );
+    }
+    @Test
+    void debeConsultarIncidenteYResponder200()
+            throws Exception {
+
+        UUID id = UUID.randomUUID();
+        LocalDateTime fecha = LocalDateTime.now();
+
+        ResultadoIncidente resultado =
+                new ResultadoIncidente(
+                        id,
+                        TipoIncidente.INUNDACION,
+                        "Inundacion con varias personas afectadas",
+                        EstadoIncidente.CLASIFICADO,
+                        NivelRiesgo.CRITICO,
+                        15,
+                        true,
+                        4.6579,
+                        -74.0596,
+                        "Carrera 7 con Calle 72, Bogota",
+                        fecha,
+                        fecha
+                );
+
+        when(consultarIncidente.ejecutar(id))
+                .thenReturn(resultado);
+
+        mockMvc.perform(
+                        get(
+                                "/api/v1/incidentes/{id}",
+                                id
+                        )
+                )
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.id")
+                                .value(id.toString())
+                )
+                .andExpect(
+                        jsonPath("$.tipo")
+                                .value("INUNDACION")
+                )
+                .andExpect(
+                        jsonPath("$.estado")
+                                .value("CLASIFICADO")
+                )
+                .andExpect(
+                        jsonPath("$.nivelRiesgo")
+                                .value("CRITICO")
+                )
+                .andExpect(
+                        jsonPath("$.cantidadPersonasAfectadas")
+                                .value(15)
+                );
+    }
+    @Test
+    void debeResponder404AlConsultarIncidenteInexistente()
+            throws Exception {
+
+        UUID id = UUID.randomUUID();
+
+        when(consultarIncidente.ejecutar(id))
+                .thenThrow(
+                        new IncidenteNoEncontradoException(id)
+                );
+
+        mockMvc.perform(
+                        get(
+                                "/api/v1/incidentes/{id}",
+                                id
+                        )
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(
+                        jsonPath("$.estado")
+                                .value(404)
+                )
+                .andExpect(
+                        jsonPath("$.codigo")
+                                .value("INCIDENTE_NO_ENCONTRADO")
+                )
+                .andExpect(
+                        jsonPath("$.ruta")
+                                .value(
+                                        "/api/v1/incidentes/" + id
+                                )
                 );
     }
 

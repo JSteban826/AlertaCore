@@ -6,14 +6,19 @@ import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
 import com.alertacore.incidentservice.infrastructure.persistence.entity.IncidenteEntity;
 
+import java.util.Objects;
+
 public final class IncidentePersistenceMapper {
 
     public IncidenteEntity aEntidad(
             Incidente incidente
     ) {
-        Integer puntaje = incidente.getPuntajeRiesgo() == null
-                ? null
-                : incidente.getPuntajeRiesgo().getValor();
+        Objects.requireNonNull(
+                incidente,
+                "El incidente es obligatorio"
+        );
+
+        Integer puntaje = obtenerPuntaje(incidente);
 
         return new IncidenteEntity(
                 incidente.getId(),
@@ -40,6 +45,11 @@ public final class IncidentePersistenceMapper {
     public Incidente aDominio(
             IncidenteEntity entidad
     ) {
+        Objects.requireNonNull(
+                entidad,
+                "La entidad de incidente es obligatoria"
+        );
+
         Ubicacion ubicacion = new Ubicacion(
                 entidad.getLatitud(),
                 entidad.getLongitud(),
@@ -73,5 +83,49 @@ public final class IncidentePersistenceMapper {
                 entidad.getFechaReporte(),
                 entidad.getFechaUltimaActualizacion()
         );
+    }
+
+    public void actualizarEntidad(
+            IncidenteEntity entidad,
+            Incidente incidente
+    ) {
+        Objects.requireNonNull(
+                entidad,
+                "La entidad de incidente es obligatoria"
+        );
+
+        Objects.requireNonNull(
+                incidente,
+                "El incidente es obligatorio"
+        );
+
+        Integer puntaje = obtenerPuntaje(incidente);
+
+        entidad.actualizarDesde(
+                incidente.getTipo(),
+                incidente.getDescripcion(),
+                incidente.getEstado(),
+                puntaje,
+                incidente.getCantidadPersonasAfectadas(),
+                incidente.hayPersonasHeridas(),
+                incidente.getUbicacion().getLatitud(),
+                incidente.getUbicacion().getLongitud(),
+                incidente.getUbicacion().getDireccion(),
+                incidente.getInformacionContacto()
+                        .getNombreReportante(),
+                incidente.getInformacionContacto()
+                        .getCorreo(),
+                incidente.getInformacionContacto()
+                        .getTelefono(),
+                incidente.getFechaUltimaActualizacion()
+        );
+    }
+
+    private Integer obtenerPuntaje(
+            Incidente incidente
+    ) {
+        return incidente.getPuntajeRiesgo() == null
+                ? null
+                : incidente.getPuntajeRiesgo().getValor();
     }
 }

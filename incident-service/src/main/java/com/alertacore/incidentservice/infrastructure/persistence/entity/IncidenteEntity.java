@@ -125,6 +125,38 @@ public class IncidenteEntity {
             nullable = false
     )
     private Long version;
+    public void actualizarDesde(
+            TipoIncidente tipo,
+            String descripcion,
+            EstadoIncidente estado,
+            Integer puntajeRiesgo,
+            int cantidadPersonasAfectadas,
+            boolean hayPersonasHeridas,
+            double latitud,
+            double longitud,
+            String direccion,
+            String nombreReportante,
+            String correoReportante,
+            String telefonoReportante,
+            LocalDateTime fechaUltimaActualizacion
+    ) {
+        this.tipo = tipo;
+        this.descripcion = descripcion;
+        this.estado = estado;
+        this.puntajeRiesgo = puntajeRiesgo;
+        this.cantidadPersonasAfectadas =
+                cantidadPersonasAfectadas;
+        this.hayPersonasHeridas =
+                hayPersonasHeridas;
+        this.latitud = latitud;
+        this.longitud = longitud;
+        this.direccion = direccion;
+        this.nombreReportante = nombreReportante;
+        this.correoReportante = correoReportante;
+        this.telefonoReportante = telefonoReportante;
+        this.fechaUltimaActualizacion =
+                fechaUltimaActualizacion;
+    }
 
     protected IncidenteEntity() {
         // Constructor requerido por JPA.

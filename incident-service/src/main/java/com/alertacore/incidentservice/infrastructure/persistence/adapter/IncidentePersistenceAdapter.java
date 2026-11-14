@@ -32,14 +32,27 @@ public final class IncidentePersistenceAdapter
     }
 
     @Override
-    public Incidente guardar(Incidente incidente) {
+    public Incidente guardar(
+            Incidente incidente
+    ) {
         Objects.requireNonNull(
                 incidente,
                 "El incidente es obligatorio"
         );
 
-        IncidenteEntity entidad =
-                mapper.aEntidad(incidente);
+        IncidenteEntity entidad = repositorioJpa
+                .findById(incidente.getId())
+                .map(entidadExistente -> {
+                    mapper.actualizarEntidad(
+                            entidadExistente,
+                            incidente
+                    );
+
+                    return entidadExistente;
+                })
+                .orElseGet(
+                        () -> mapper.aEntidad(incidente)
+                );
 
         IncidenteEntity entidadGuardada =
                 repositorioJpa.save(entidad);

@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.LinkedHashMap;
 import com.alertacore.incidentservice.domain.exception.ServicioMeteorologicoException;
 import java.util.Map;
-
+import com.alertacore.incidentservice.domain.exception.DireccionNoEncontradaException;
+import com.alertacore.incidentservice.domain.exception.ServicioGeocodificacionException;
 @RestControllerAdvice
 public class ManejadorGlobalExcepciones {
 
@@ -144,6 +145,43 @@ public class ManejadorGlobalExcepciones {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
+    @ExceptionHandler(DireccionNoEncontradaException.class)
+    public ResponseEntity<ErrorResponse>
+    manejarDireccionNoEncontrada(
+            DireccionNoEncontradaException excepcion,
+            HttpServletRequest request
+    ) {
+
+        ErrorResponse error = ErrorResponse.crear(
+                HttpStatus.NOT_FOUND.value(),
+                "DIRECCION_NO_ENCONTRADA",
+                excepcion.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
+
+    @ExceptionHandler(ServicioGeocodificacionException.class)
+    public ResponseEntity<ErrorResponse>
+    manejarServicioGeocodificacion(
+            ServicioGeocodificacionException excepcion,
+            HttpServletRequest request
+    ) {
+
+        ErrorResponse error = ErrorResponse.crear(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "SERVICIO_GEOCODIFICACION_NO_DISPONIBLE",
+                excepcion.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(error);
     }
 }

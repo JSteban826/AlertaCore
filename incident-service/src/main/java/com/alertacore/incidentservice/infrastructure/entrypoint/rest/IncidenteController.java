@@ -12,11 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.alertacore.incidentservice.application.dto.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
-
+import com.alertacore.incidentservice.application.dto.GeocodificacionResultado;
+import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
+import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.GeocodificarDireccionRequest;
+import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 
 @RestController
 @RequestMapping("/api/v1/incidentes")
@@ -31,6 +35,7 @@ public class IncidenteController {
     private final ConsultarEstadisticasIncidentesPort  consultarEstadisticas;
     private final ConsultarRiesgoMeteorologicoPort
             consultarRiesgoMeteorologico;
+    private final GeocodificarDireccionPort geocodificarDireccion;
 
     public IncidenteController(
             RegistrarIncidentePort registrarIncidente,
@@ -39,38 +44,34 @@ public class IncidenteController {
             ListarIncidentesPort listarIncidentes,
             ConsultarEstadisticasIncidentesPort consultarEstadisticas,
             ConsultarRiesgoMeteorologicoPort consultarRiesgoMeteorologico,
+            GeocodificarDireccionPort geocodificarDireccion,
             ClasificarIncidentePort clasificarIncidente,
             CambiarEstadoIncidentePort cambiarEstadoIncidente
     ) {
-        this.registrarIncidente =
-                Objects.requireNonNull(
-                        registrarIncidente,
-                        "El caso de uso para registrar es obligatorio"
-                );
+        this.registrarIncidente = Objects.requireNonNull(
+                registrarIncidente,
+                "El caso de uso para registrar es obligatorio"
+        );
 
-        this.consultarIncidente =
-                Objects.requireNonNull(
-                        consultarIncidente,
-                        "El caso de uso para consultar es obligatorio"
-                );
+        this.consultarIncidente = Objects.requireNonNull(
+                consultarIncidente,
+                "El caso de uso para consultar es obligatorio"
+        );
 
-        this.consultarLineaTiempo =
-                Objects.requireNonNull(
-                        consultarLineaTiempo,
-                        "El caso de uso para consultar la linea de tiempo es obligatorio"
-                );
+        this.consultarLineaTiempo = Objects.requireNonNull(
+                consultarLineaTiempo,
+                "El caso de uso para consultar la linea de tiempo es obligatorio"
+        );
 
-        this.listarIncidentes =
-                Objects.requireNonNull(
-                        listarIncidentes,
-                        "El caso de uso para listar es obligatorio"
-                );
+        this.listarIncidentes = Objects.requireNonNull(
+                listarIncidentes,
+                "El caso de uso para listar es obligatorio"
+        );
 
-        this.consultarEstadisticas =
-                Objects.requireNonNull(
-                        consultarEstadisticas,
-                        "El caso de uso de estadisticas es obligatorio"
-                );
+        this.consultarEstadisticas = Objects.requireNonNull(
+                consultarEstadisticas,
+                "El caso de uso de estadisticas es obligatorio"
+        );
 
         this.consultarRiesgoMeteorologico =
                 Objects.requireNonNull(
@@ -78,17 +79,21 @@ public class IncidenteController {
                         "El caso de uso meteorologico es obligatorio"
                 );
 
-        this.clasificarIncidente =
+        this.geocodificarDireccion =
                 Objects.requireNonNull(
-                        clasificarIncidente,
-                        "El caso de uso para clasificar es obligatorio"
+                        geocodificarDireccion,
+                        "El caso de uso para geocodificar es obligatorio"
                 );
 
-        this.cambiarEstadoIncidente =
-                Objects.requireNonNull(
-                        cambiarEstadoIncidente,
-                        "El caso de uso para cambiar estado es obligatorio"
-                );
+        this.clasificarIncidente = Objects.requireNonNull(
+                clasificarIncidente,
+                "El caso de uso para clasificar es obligatorio"
+        );
+
+        this.cambiarEstadoIncidente = Objects.requireNonNull(
+                cambiarEstadoIncidente,
+                "El caso de uso para cambiar estado es obligatorio"
+        );
     }
 
     @PostMapping
@@ -109,6 +114,21 @@ public class IncidenteController {
         return ResponseEntity
                 .created(ubicacionRecurso)
                 .body(resultado);
+    }
+    @PostMapping("/geocodificar")
+    public ResponseEntity<GeocodificacionResultado>
+    geocodificar(
+            @Valid
+            @RequestBody
+            GeocodificarDireccionRequest request
+    ) {
+
+        GeocodificacionResultado resultado =
+                geocodificarDireccion.ejecutar(
+                        request.aComando()
+                );
+
+        return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/{incidenteId}")

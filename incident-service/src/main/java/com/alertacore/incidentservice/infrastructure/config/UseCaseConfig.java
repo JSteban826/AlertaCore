@@ -3,10 +3,7 @@ package com.alertacore.incidentservice.infrastructure.config;
 import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.application.usecase.*;
-import com.alertacore.incidentservice.domain.port.out.RepositorioEstadisticasIncidentePort;
-import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
-import com.alertacore.incidentservice.domain.port.out.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.port.out.*;
 import com.alertacore.incidentservice.domain.service.*;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.EstadisticasIncidentePersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.HistorialEstadoPersistenceAdapter;
@@ -182,6 +179,14 @@ public class UseCaseConfig {
         return new ConsultarRiesgoMeteorologicoUseCase(
                 repositorioIncidente,
                 servicioMeteorologico
+        );
+    }
+    @Bean
+    public GeocodificarDireccionUseCase geocodificarDireccionUseCase(
+            ServicioGeocodificacionPort servicioGeocodificacion
+    ) {
+        return new GeocodificarDireccionUseCase(
+                servicioGeocodificacion
         );
     }
 

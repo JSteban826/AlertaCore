@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,6 +40,7 @@ class IncidenteControllerTest {
             consultarEstadisticas;
     private ConsultarRiesgoMeteorologicoPort
             consultarRiesgoMeteorologico;
+    private GeocodificarDireccionPort geocodificarDireccion;
     private MockMvc mockMvc;
     @BeforeEach
     void configurar() {
@@ -69,6 +71,9 @@ class IncidenteControllerTest {
 
         cambiarEstadoIncidente =
                 mock(CambiarEstadoIncidentePort.class);
+        geocodificarDireccion =
+                mock(GeocodificarDireccionPort.class);
+
 
         IncidenteController controller =
                 new IncidenteController(
@@ -78,6 +83,7 @@ class IncidenteControllerTest {
                         listarIncidentes,
                         consultarEstadisticas,
                         consultarRiesgoMeteorologico,
+                        geocodificarDireccion,
                         clasificarIncidente,
                         cambiarEstadoIncidente
                 );

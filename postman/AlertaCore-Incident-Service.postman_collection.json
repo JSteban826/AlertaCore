@@ -1,0 +1,944 @@
+{
+  "info": {
+    "name": "AlertaCore - Incident Service",
+    "description": "Colección para probar incident-service localmente. Incluye flujo principal, integraciones externas y escenarios de error.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "incidenteId",
+      "value": ""
+    },
+    {
+      "key": "incidenteInexistenteId",
+      "value": "11111111-1111-1111-1111-111111111111"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Flujo principal",
+      "item": [
+        {
+          "name": "Registrar incidente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes"
+              ]
+            },
+            "description": "Registra un incidente y guarda automáticamente el UUID en la variable incidenteId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"INUNDACION\",\n  \"descripcion\": \"Inundacion con varias personas afectadas en el sector\",\n  \"latitud\": 4.6579,\n  \"longitud\": -74.0596,\n  \"direccion\": \"Carrera 7 con Calle 72, Bogota\",\n  \"nombreReportante\": \"Operador de prueba\",\n  \"correoReportante\": \"operador@alertacore.com\",\n  \"telefonoReportante\": \"3001234567\",\n  \"cantidadPersonasAfectadas\": 15,\n  \"hayPersonasHeridas\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Respuesta contiene UUID y estado REPORTADO', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.id).to.exist;",
+                  "  pm.expect(json.estado).to.eql('REPORTADO');",
+                  "  pm.collectionVariables.set('incidenteId', json.id);",
+                  "  pm.environment.set('incidenteId', json.id);",
+                  "});",
+                  "pm.test('Encabezado Location presente', () => pm.expect(pm.response.headers.get('Location')).to.exist);",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar incidente por UUID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('El UUID coincide', () => pm.expect(pm.response.json().id).to.eql(pm.variables.get('incidenteId')));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar estado a VALIDADO",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteId}}",
+                "estado"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"VALIDADO\",\n  \"motivo\": \"Informacion verificada por el operador\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado VALIDADO', () => pm.expect(pm.response.json().estado).to.eql('VALIDADO'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Clasificar incidente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteId}}/clasificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteId}}",
+                "clasificar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hayLluviaIntensa\": true,\n  \"accesoDificil\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Incluye puntaje y nivel', () => {",
+                  " const json = pm.response.json();",
+                  " pm.expect(json.puntajeRiesgo).to.exist;",
+                  " pm.expect(json.nivelRiesgo).to.exist;",
+                  "});",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar linea de tiempo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteId}}/linea-tiempo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteId}}",
+                "linea-tiempo"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta es un arreglo', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Consultas",
+      "item": [
+        {
+          "name": "Listar incidentes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes?page=0&size=20"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Respuesta paginada', () => { const j=pm.response.json(); pm.expect(j).to.be.an('object'); });",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por estado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes?estado=CLASIFICADO&page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes?estado=CLASIFICADO&page=0&size=20"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar por tipo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes?tipo=INUNDACION&page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes?tipo=INUNDACION&page=0&size=20"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar estadisticas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/estadisticas/tiempos-respuesta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "estadisticas",
+                "tiempos-respuesta"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Contiene total de incidentes', () => pm.expect(pm.response.json().totalIncidentes).to.exist);",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar riesgo meteorologico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteId}}/riesgo-meteorologico",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteId}}",
+                "riesgo-meteorologico"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Fuente Open-Meteo', () => pm.expect(pm.response.json().fuente).to.eql('Open-Meteo'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Geocodificacion",
+      "item": [
+        {
+          "name": "Geocodificar direccion valida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/geocodificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "geocodificar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direccion\": \"Carrera 7 # 72-41, Chapinero, Bogota, Colombia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Contiene coordenadas y atribucion', () => { const j=pm.response.json(); pm.expect(j.latitud).to.be.a('number'); pm.expect(j.longitud).to.be.a('number'); pm.expect(j.atribucion).to.include('OpenStreetMap'); });",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Direccion invalida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/geocodificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "geocodificar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direccion\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Codigo SOLICITUD_INVALIDA', () => pm.expect(pm.response.json().codigo).to.eql('SOLICITUD_INVALIDA'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Direccion no encontrada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/geocodificar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "geocodificar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"direccion\": \"Avenida Inventada XYZ 999999, Bogota, Colombia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Codigo DIRECCION_NO_ENCONTRADA', () => pm.expect(pm.response.json().codigo).to.eql('DIRECCION_NO_ENCONTRADA'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Escenarios de error",
+      "item": [
+        {
+          "name": "Incidente inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteInexistenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteInexistenteId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Codigo INCIDENTE_NO_ENCONTRADO', () => pm.expect(pm.response.json().codigo).to.eql('INCIDENTE_NO_ENCONTRADO'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Riesgo meteorologico de incidente inexistente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteInexistenteId}}/riesgo-meteorologico",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteInexistenteId}}",
+                "riesgo-meteorologico"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listado con tamaño invalido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes?page=0&size=101",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes?page=0&size=101"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Codigo ARGUMENTO_INVALIDO', () => pm.expect(pm.response.json().codigo).to.eql('ARGUMENTO_INVALIDO'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transicion invalida REPORTADO a CERRADO",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/incidentes/{{incidenteId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "incidentes",
+                "{{incidenteId}}",
+                "estado"
+              ]
+            },
+            "description": "Ejecutar con un incidente que permanezca en REPORTADO. Si incidenteId ya fue clasificado, registre otro incidente antes.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"CERRADO\",\n  \"motivo\": \"Intento de transicion invalida\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Codigo TRANSICION_ESTADO_INVALIDA', () => pm.expect(pm.response.json().codigo).to.eql('TRANSICION_ESTADO_INVALIDA'));",
+                  "pm.test('Tiempo de respuesta menor a 2000 ms', () => pm.expect(pm.response.responseTime).to.be.below(2000));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Actuator y documentacion",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Circuit breakers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/circuitbreakers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "circuitbreakers"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OpenAPI JSON",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v3/api-docs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Estado 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

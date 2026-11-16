@@ -18,4 +18,6 @@ public interface RepositorioRecursoPort {
     List<Recurso> buscarDisponiblesPorTipo(TipoRecurso tipo);
 
     boolean existePorCodigo(String codigo);
+
+    List<Recurso> buscarTodos();
 }

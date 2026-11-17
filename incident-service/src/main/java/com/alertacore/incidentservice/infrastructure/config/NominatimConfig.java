@@ -63,13 +63,11 @@ public class NominatimConfig {
     @Bean
     @Primary
     public ServicioGeocodificacionGateway
-    servicioGeocodificacionPort(
-            @Qualifier("nominatimAdapter")
-            ServicioGeocodificacionGateway adaptador
+    servicioGeocodificacionGateway(
+            RestClient nominatimRestClient
     ) {
-
-        return new ServicioGeocodificacionCacheado(
-                adaptador
+        return new NominatimAdapter(
+                nominatimRestClient
         );
     }
 }

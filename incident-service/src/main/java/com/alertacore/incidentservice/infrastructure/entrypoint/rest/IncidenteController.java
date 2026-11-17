@@ -1,12 +1,12 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
 
-import com.alertacore.incidentservice.application.dto.EstadisticasIncidentesResultado;
-import com.alertacore.incidentservice.application.dto.GeocodificacionResultado;
-import com.alertacore.incidentservice.application.dto.PaginaIncidentesResultado;
-import com.alertacore.incidentservice.application.dto.RegistroLineaTiempoResultado;
-import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
-import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
-import com.alertacore.incidentservice.application.dto.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
+import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
+import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
+import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
+import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
+import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.application.port.in.ConsultarEstadisticasIncidentesPort;

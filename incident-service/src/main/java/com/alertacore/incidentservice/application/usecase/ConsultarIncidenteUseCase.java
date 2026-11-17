@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.usecase;
 
-import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.Incidente;

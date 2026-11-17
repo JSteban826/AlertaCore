@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.port.in;
 
-import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 
 import java.util.UUID;
 

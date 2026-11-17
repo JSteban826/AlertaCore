@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.usecase;
 
-import com.alertacore.incidentservice.application.dto.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;

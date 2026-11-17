@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.port.in;
 
-import com.alertacore.incidentservice.application.dto.RegistroLineaTiempoResultado;
+import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
 
 import java.util.List;
 import java.util.UUID;

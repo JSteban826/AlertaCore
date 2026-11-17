@@ -1,6 +1,8 @@
 package com.alertacore.incidentservice.domain.service;
 
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
+import com.alertacore.incidentservice.domain.model.ContextoRiesgo;
+import com.alertacore.incidentservice.domain.usecase.risk.ReglaCantidadAfectados;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

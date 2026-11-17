@@ -1,6 +1,4 @@
-package com.alertacore.incidentservice.application.dto;
-
-import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
+package com.alertacore.incidentservice.domain.model;
 
 public record GeocodificacionResultado(
         String direccionConsultada,

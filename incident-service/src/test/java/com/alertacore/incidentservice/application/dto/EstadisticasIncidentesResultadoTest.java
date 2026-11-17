@@ -3,6 +3,7 @@ package com.alertacore.incidentservice.application.dto;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
+import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;

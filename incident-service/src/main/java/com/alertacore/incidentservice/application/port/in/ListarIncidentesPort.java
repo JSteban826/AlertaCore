@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.port.in;
 
-import com.alertacore.incidentservice.application.dto.PaginaIncidentesResultado;
+import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 

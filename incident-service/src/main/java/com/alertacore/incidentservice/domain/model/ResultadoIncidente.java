@@ -1,9 +1,8 @@
-package com.alertacore.incidentservice.application.dto;
+package com.alertacore.incidentservice.domain.model;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
-import com.alertacore.incidentservice.domain.model.Incidente;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

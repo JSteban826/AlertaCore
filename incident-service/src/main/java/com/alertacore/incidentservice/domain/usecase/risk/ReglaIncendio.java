@@ -1,6 +1,7 @@
-package com.alertacore.incidentservice.domain.service;
+package com.alertacore.incidentservice.domain.usecase.risk;
 
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
+import com.alertacore.incidentservice.domain.model.ContextoRiesgo;
 
 import java.util.Objects;
 

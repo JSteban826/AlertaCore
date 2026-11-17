@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.usecase;
 
-import com.alertacore.incidentservice.application.dto.EstadisticasIncidentesResultado;
+import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
 import com.alertacore.incidentservice.application.port.in.ConsultarEstadisticasIncidentesPort;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
 import com.alertacore.incidentservice.domain.port.out.RepositorioEstadisticasIncidentePort;

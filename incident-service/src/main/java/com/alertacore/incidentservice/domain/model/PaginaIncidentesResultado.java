@@ -1,7 +1,4 @@
-package com.alertacore.incidentservice.application.dto;
-
-import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.model.Pagina;
+package com.alertacore.incidentservice.domain.model;
 
 import java.util.List;
 

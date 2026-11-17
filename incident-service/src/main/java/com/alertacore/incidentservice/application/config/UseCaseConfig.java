@@ -4,7 +4,7 @@ import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidente
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.application.usecase.*;
 import com.alertacore.incidentservice.domain.port.out.*;
-import com.alertacore.incidentservice.domain.service.*;
+import com.alertacore.incidentservice.domain.usecase.risk.*;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.EstadisticasIncidentePersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.HistorialEstadoPersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.IncidentePersistenceAdapter;

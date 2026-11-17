@@ -1,7 +1,6 @@
-package com.alertacore.incidentservice.application.dto;
+package com.alertacore.incidentservice.domain.model;
 
 import com.alertacore.incidentservice.domain.enums.NivelRiesgoMeteorologico;
-import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

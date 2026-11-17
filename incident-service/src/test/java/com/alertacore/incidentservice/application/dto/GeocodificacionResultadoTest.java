@@ -1,5 +1,6 @@
 package com.alertacore.incidentservice.application.dto;
 
+import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.usecase;
 
-import com.alertacore.incidentservice.application.dto.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;

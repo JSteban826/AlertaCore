@@ -2,6 +2,7 @@ package com.alertacore.incidentservice.application.dto;
 
 import com.alertacore.incidentservice.domain.enums.NivelRiesgoMeteorologico;
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
+import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

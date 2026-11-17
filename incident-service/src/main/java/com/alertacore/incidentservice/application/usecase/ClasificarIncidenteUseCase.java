@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.application.usecase;
 
 import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
-import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
+import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
@@ -10,8 +10,8 @@ import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
 import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
-import com.alertacore.incidentservice.domain.service.CalculadoraRiesgo;
-import com.alertacore.incidentservice.domain.service.ContextoRiesgo;
+import com.alertacore.incidentservice.domain.usecase.risk.CalculadoraRiesgo;
+import com.alertacore.incidentservice.domain.model.ContextoRiesgo;
 
 import java.util.Objects;
 

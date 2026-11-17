@@ -1,6 +1,4 @@
-package com.alertacore.incidentservice.application.dto;
-
-import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
+package com.alertacore.incidentservice.domain.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

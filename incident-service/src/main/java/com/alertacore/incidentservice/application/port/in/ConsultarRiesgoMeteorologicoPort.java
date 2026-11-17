@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.application.port.in;
 
-import com.alertacore.incidentservice.application.dto.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 
 import java.util.UUID;
 

@@ -1,5 +1,6 @@
-package com.alertacore.incidentservice.domain.service;
+package com.alertacore.incidentservice.domain.usecase.risk;
 
+import com.alertacore.incidentservice.domain.model.ContextoRiesgo;
 import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
 
 import java.util.List;

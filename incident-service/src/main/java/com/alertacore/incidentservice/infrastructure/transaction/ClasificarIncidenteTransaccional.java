@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.transaction;
 
 import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
-import com.alertacore.incidentservice.application.dto.ResultadoClasificacion;
+import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import org.springframework.transaction.annotation.Transactional;
 

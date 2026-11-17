@@ -86,4 +86,44 @@ public class RecursoPersistenceMapper {
                 entity.getFechaUltimaActualizacion()
         );
     }
+
+    public RecursoEntity actualizarEntidad(
+            Recurso recurso,
+            RecursoEntity entity
+    ) {
+
+        entity.setCodigo(
+                recurso.getCodigo()
+        );
+
+        entity.setNombre(
+                recurso.getNombre()
+        );
+
+        entity.setTipo(
+                recurso.getTipo().name()
+        );
+
+        entity.setEstado(
+                recurso.getEstado().name()
+        );
+
+        entity.setLatitud(
+                recurso.getUbicacion().getLatitud()
+        );
+
+        entity.setLongitud(
+                recurso.getUbicacion().getLongitud()
+        );
+
+        entity.setFechaDisponibleDesde(
+                recurso.getFechaDisponibleDesde()
+        );
+
+        entity.setFechaUltimaActualizacion(
+                recurso.getFechaUltimaActualizacion()
+        );
+
+        return entity;
+    }
 }

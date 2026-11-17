@@ -7,10 +7,18 @@ import com.alertacore.resourceservice.application.usecase.GenerarReporteUtilizac
 import com.alertacore.resourceservice.application.usecase.LiberarRecursoUseCase;
 import com.alertacore.resourceservice.application.usecase.RegistrarRecursoUseCase;
 import com.alertacore.resourceservice.application.usecase.ReservarRecursoUseCase;
+import com.alertacore.resourceservice.application.usecase.ConsultarRecursoUseCase;
+import com.alertacore.resourceservice.application.usecase.BuscarRecursosDisponiblesUseCase;
+import com.alertacore.resourceservice.application.usecase.ListarRecursosUseCase;
 import com.alertacore.resourceservice.domain.port.out.RepositorioDespachoRecursoPort;
 import com.alertacore.resourceservice.domain.port.out.RepositorioRecursoPort;
 import com.alertacore.resourceservice.domain.port.out.RepositorioReservaRecursoPort;
+import com.alertacore.resourceservice.application.port.in.ConsultarRecursoPort;
+import com.alertacore.resourceservice.application.port.in.BuscarRecursosDisponiblesPort;
+import com.alertacore.resourceservice.application.port.in.ListarRecursosPort;
 import com.alertacore.resourceservice.domain.service.CalculadorDistanciaHaversine;
+import com.alertacore.resourceservice.domain.enums.TipoRecurso;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -92,4 +100,33 @@ public class UseCaseConfig {
                 repositorioRecursoPort
         );
     }
+
+    @Bean
+    public ConsultarRecursoUseCase consultarRecursoUseCase(
+            RepositorioRecursoPort repositorio
+    ) {
+        return new ConsultarRecursoUseCase(
+                repositorio
+        );
+    }
+
+    @Bean
+    public BuscarRecursosDisponiblesUseCase
+    buscarRecursosDisponiblesUseCase(
+            RepositorioRecursoPort repositorio
+    ) {
+        return new BuscarRecursosDisponiblesUseCase(
+                repositorio
+        );
+    }
+
+    @Bean
+    public ListarRecursosUseCase listarRecursosUseCase(
+            RepositorioRecursoPort repositorio
+    ) {
+        return new ListarRecursosUseCase(
+                repositorio
+        );
+    }
+
 }

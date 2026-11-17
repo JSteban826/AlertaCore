@@ -1,18 +1,18 @@
 package com.alertacore.incidentservice.infrastructure.client.openmeteo;
 
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Objects;
 
 public class ServicioMeteorologicoCacheado
-        implements ServicioMeteorologicoPort {
+        implements ServicioMeteorologicoGateway {
 
-    private final ServicioMeteorologicoPort delegado;
+    private final ServicioMeteorologicoGateway delegado;
 
     public ServicioMeteorologicoCacheado(
-            ServicioMeteorologicoPort delegado
+            ServicioMeteorologicoGateway delegado
     ) {
         this.delegado = Objects.requireNonNull(
                 delegado,

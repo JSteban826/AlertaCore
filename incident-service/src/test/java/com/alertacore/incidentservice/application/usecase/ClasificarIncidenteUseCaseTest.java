@@ -11,8 +11,8 @@ import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import com.alertacore.incidentservice.domain.usecase.risk.CalculadoraRiesgo;
 import com.alertacore.incidentservice.domain.usecase.risk.ReglaAccesoDificil;
 import com.alertacore.incidentservice.domain.usecase.risk.ReglaCantidadAfectados;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 class ClasificarIncidenteUseCaseTest {
 
     private IncidenteGateway repositorio;
-    private RepositorioHistorialEstadoPort repositorioHistorial;
+    private HistorialEstadoGateway repositorioHistorial;
     private CalculadoraRiesgo calculadora;
     private ClasificarIncidenteUseCase casoUso;
 
@@ -53,7 +53,7 @@ class ClasificarIncidenteUseCaseTest {
         );
 
         repositorioHistorial = mock(
-                RepositorioHistorialEstadoPort.class
+                HistorialEstadoGateway.class
         );
 
         List<ReglaRiesgo> reglas = List.of(

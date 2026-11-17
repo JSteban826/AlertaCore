@@ -9,9 +9,9 @@ import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.gateway.RepositorioEstadisticasIncidentePort;
-import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.EstadisticasIncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +56,11 @@ class EstadisticasIncidenteIntegrationTest {
             repositorioIncidente;
 
     @Autowired
-    private RepositorioHistorialEstadoPort
+    private HistorialEstadoGateway
             repositorioHistorial;
 
     @Autowired
-    private RepositorioEstadisticasIncidentePort
+    private EstadisticasIncidenteGateway
             repositorioEstadisticas;
 
     @Autowired

@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.config;
 
-import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioGeocodificacionGateway;
 import com.alertacore.incidentservice.infrastructure.client.nominatim.NominatimAdapter;
 import com.alertacore.incidentservice.infrastructure.client.nominatim.ServicioGeocodificacionCacheado;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,7 +53,7 @@ public class NominatimConfig {
     }
 
     @Bean("nominatimAdapter")
-    public ServicioGeocodificacionPort nominatimAdapter(
+    public ServicioGeocodificacionGateway nominatimAdapter(
             @Qualifier("nominatimRestClient")
             RestClient restClient
     ) {
@@ -62,10 +62,10 @@ public class NominatimConfig {
 
     @Bean
     @Primary
-    public ServicioGeocodificacionPort
+    public ServicioGeocodificacionGateway
     servicioGeocodificacionPort(
             @Qualifier("nominatimAdapter")
-            ServicioGeocodificacionPort adaptador
+            ServicioGeocodificacionGateway adaptador
     ) {
 
         return new ServicioGeocodificacionCacheado(

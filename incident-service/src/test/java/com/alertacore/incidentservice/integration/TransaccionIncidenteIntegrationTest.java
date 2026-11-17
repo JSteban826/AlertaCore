@@ -8,8 +8,8 @@ import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -240,10 +240,10 @@ class TransaccionIncidenteIntegrationTest {
          */
         @Bean
         @Primary
-        RepositorioHistorialEstadoPort
+        HistorialEstadoGateway
         repositorioHistorialQueFalla() {
 
-            return new RepositorioHistorialEstadoPort() {
+            return new HistorialEstadoGateway() {
 
                 @Override
                 public RegistroHistorialEstado guardar(

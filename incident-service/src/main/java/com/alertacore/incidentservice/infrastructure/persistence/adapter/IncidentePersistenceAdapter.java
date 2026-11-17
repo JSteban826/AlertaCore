@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.persistence.adapter;
 
 import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import com.alertacore.incidentservice.infrastructure.persistence.entity.IncidenteEntity;
 import com.alertacore.incidentservice.infrastructure.persistence.mapper.IncidentePersistenceMapper;
 import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaIncidenteRepository;

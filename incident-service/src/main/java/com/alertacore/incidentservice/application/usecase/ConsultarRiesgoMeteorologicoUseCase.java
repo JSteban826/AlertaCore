@@ -5,8 +5,8 @@ import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteoro
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
 import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -15,11 +15,11 @@ public final class ConsultarRiesgoMeteorologicoUseCase
         implements ConsultarRiesgoMeteorologicoPort {
 
     private final IncidenteGateway repositorioIncidente;
-    private final ServicioMeteorologicoPort servicioMeteorologico;
+    private final ServicioMeteorologicoGateway servicioMeteorologico;
 
     public ConsultarRiesgoMeteorologicoUseCase(
             IncidenteGateway repositorioIncidente,
-            ServicioMeteorologicoPort servicioMeteorologico
+            ServicioMeteorologicoGateway servicioMeteorologico
     ) {
         this.repositorioIncidente = Objects.requireNonNull(
                 repositorioIncidente,

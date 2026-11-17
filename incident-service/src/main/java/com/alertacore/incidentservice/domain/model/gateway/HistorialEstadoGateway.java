@@ -1,11 +1,11 @@
-package com.alertacore.incidentservice.domain.gateway;
+package com.alertacore.incidentservice.domain.model.gateway;
 
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface RepositorioHistorialEstadoPort {
+public interface HistorialEstadoGateway {
 
     RegistroHistorialEstado guardar(
             RegistroHistorialEstado registro

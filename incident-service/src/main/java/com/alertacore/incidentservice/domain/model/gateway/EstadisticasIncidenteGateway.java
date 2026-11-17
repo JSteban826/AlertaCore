@@ -1,8 +1,8 @@
-package com.alertacore.incidentservice.domain.gateway;
+package com.alertacore.incidentservice.domain.model.gateway;
 
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
 
-public interface RepositorioEstadisticasIncidentePort {
+public interface EstadisticasIncidenteGateway {
 
     EstadisticasIncidentes obtenerEstadisticas();
 }

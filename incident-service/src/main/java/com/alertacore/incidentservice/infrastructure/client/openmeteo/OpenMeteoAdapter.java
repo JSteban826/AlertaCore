@@ -2,7 +2,7 @@ package com.alertacore.incidentservice.infrastructure.client.openmeteo;
 
 import com.alertacore.incidentservice.domain.exception.ServicioMeteorologicoException;
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.dto.OpenMeteoCurrentResponse;
 import org.springframework.web.client.RestClient;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class OpenMeteoAdapter
-        implements ServicioMeteorologicoPort {
+        implements ServicioMeteorologicoGateway {
 
     private static final String FUENTE = "Open-Meteo";
 

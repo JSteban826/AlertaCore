@@ -1,8 +1,8 @@
-package com.alertacore.incidentservice.domain.gateway;
+package com.alertacore.incidentservice.domain.model.gateway;
 
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
 
-public interface ServicioMeteorologicoPort {
+public interface ServicioMeteorologicoGateway {
 
     CondicionMeteorologica consultarCondicionActual(
             double latitud,

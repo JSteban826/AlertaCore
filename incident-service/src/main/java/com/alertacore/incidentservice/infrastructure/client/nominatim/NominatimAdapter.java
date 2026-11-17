@@ -3,14 +3,14 @@ package com.alertacore.incidentservice.infrastructure.client.nominatim;
 import com.alertacore.incidentservice.domain.exception.DireccionNoEncontradaException;
 import com.alertacore.incidentservice.domain.exception.ServicioGeocodificacionException;
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
-import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioGeocodificacionGateway;
 import com.alertacore.incidentservice.infrastructure.client.nominatim.dto.NominatimSearchResponse;
 import org.springframework.web.client.RestClient;
 
 import java.util.Objects;
 
 public final class NominatimAdapter
-        implements ServicioGeocodificacionPort {
+        implements ServicioGeocodificacionGateway {
 
     private static final String FUENTE =
             "OpenStreetMap Nominatim";

@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.client.openmeteo;
 
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -16,8 +16,8 @@ class ServicioMeteorologicoCacheadoTest {
 
     @Test
     void debeDelegarConsultaMeteorologica() {
-        ServicioMeteorologicoPort delegado =
-                mock(ServicioMeteorologicoPort.class);
+        ServicioMeteorologicoGateway delegado =
+                mock(ServicioMeteorologicoGateway.class);
 
         ServicioMeteorologicoCacheado servicio =
                 new ServicioMeteorologicoCacheado(

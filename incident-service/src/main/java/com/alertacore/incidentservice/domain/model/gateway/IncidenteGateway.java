@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.domain.gateway;
+package com.alertacore.incidentservice.domain.model.gateway;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;

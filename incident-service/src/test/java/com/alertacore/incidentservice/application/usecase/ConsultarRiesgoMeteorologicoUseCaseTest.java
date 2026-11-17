@@ -8,8 +8,8 @@ import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 class ConsultarRiesgoMeteorologicoUseCaseTest {
 
     private IncidenteGateway repositorioIncidente;
-    private ServicioMeteorologicoPort servicioMeteorologico;
+    private ServicioMeteorologicoGateway servicioMeteorologico;
     private ConsultarRiesgoMeteorologicoUseCase casoUso;
 
     @BeforeEach
@@ -38,7 +38,7 @@ class ConsultarRiesgoMeteorologicoUseCaseTest {
         );
 
         servicioMeteorologico = mock(
-                ServicioMeteorologicoPort.class
+                ServicioMeteorologicoGateway.class
         );
 
         casoUso = new ConsultarRiesgoMeteorologicoUseCase(

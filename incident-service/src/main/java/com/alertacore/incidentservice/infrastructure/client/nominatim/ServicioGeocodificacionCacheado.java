@@ -1,18 +1,18 @@
 package com.alertacore.incidentservice.infrastructure.client.nominatim;
 
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
-import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioGeocodificacionGateway;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Objects;
 
 public class ServicioGeocodificacionCacheado
-        implements ServicioGeocodificacionPort {
+        implements ServicioGeocodificacionGateway {
 
-    private final ServicioGeocodificacionPort delegado;
+    private final ServicioGeocodificacionGateway delegado;
 
     public ServicioGeocodificacionCacheado(
-            ServicioGeocodificacionPort delegado
+            ServicioGeocodificacionGateway delegado
     ) {
         this.delegado = Objects.requireNonNull(
                 delegado,

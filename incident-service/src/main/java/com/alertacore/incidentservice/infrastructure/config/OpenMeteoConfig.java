@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.config;
 
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.OpenMeteoAdapter;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.ServicioMeteorologicoCacheado;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,7 +61,7 @@ public class OpenMeteoConfig {
     }
 
     @Bean("openMeteoAdapter")
-    public ServicioMeteorologicoPort openMeteoAdapter(
+    public ServicioMeteorologicoGateway openMeteoAdapter(
             @Qualifier("openMeteoRestClient")
             RestClient restClient
     ) {
@@ -71,9 +71,9 @@ public class OpenMeteoConfig {
     }
 
     @Bean("servicioMeteorologicoResiliente")
-    public ServicioMeteorologicoPort servicioMeteorologicoResiliente(
+    public ServicioMeteorologicoGateway servicioMeteorologicoResiliente(
             @Qualifier("openMeteoAdapter")
-            ServicioMeteorologicoPort openMeteoAdapter
+            ServicioMeteorologicoGateway openMeteoAdapter
     ) {
         return new ServicioMeteorologicoResiliente(
                 openMeteoAdapter
@@ -82,9 +82,9 @@ public class OpenMeteoConfig {
 
     @Bean("servicioMeteorologicoCacheado")
     @Primary
-    public ServicioMeteorologicoPort servicioMeteorologicoCacheado(
+    public ServicioMeteorologicoGateway servicioMeteorologicoCacheado(
             @Qualifier("servicioMeteorologicoResiliente")
-            ServicioMeteorologicoPort servicioResiliente
+            ServicioMeteorologicoGateway servicioResiliente
     ) {
         return new ServicioMeteorologicoCacheado(
                 servicioResiliente

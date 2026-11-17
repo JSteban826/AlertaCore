@@ -6,7 +6,7 @@ import com.alertacore.incidentservice.application.port.in.RegistrarIncidentePort
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 
 import java.util.Objects;
 

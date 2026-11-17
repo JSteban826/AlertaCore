@@ -3,17 +3,17 @@ package com.alertacore.incidentservice.application.usecase;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
 import com.alertacore.incidentservice.application.port.in.ConsultarEstadisticasIncidentesPort;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
-import com.alertacore.incidentservice.domain.gateway.RepositorioEstadisticasIncidentePort;
+import com.alertacore.incidentservice.domain.model.gateway.EstadisticasIncidenteGateway;
 
 import java.util.Objects;
 
 public final class ConsultarEstadisticasIncidentesUseCase
         implements ConsultarEstadisticasIncidentesPort {
 
-    private final RepositorioEstadisticasIncidentePort repositorio;
+    private final EstadisticasIncidenteGateway repositorio;
 
     public ConsultarEstadisticasIncidentesUseCase(
-            RepositorioEstadisticasIncidentePort repositorio
+            EstadisticasIncidenteGateway repositorio
     ) {
         this.repositorio = Objects.requireNonNull(
                 repositorio,

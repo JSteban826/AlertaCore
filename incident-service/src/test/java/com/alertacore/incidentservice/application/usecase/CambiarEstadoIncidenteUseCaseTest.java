@@ -11,8 +11,8 @@ import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
+import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 class CambiarEstadoIncidenteUseCaseTest {
 
     private IncidenteGateway repositorio;
-    private RepositorioHistorialEstadoPort repositorioHistorial;
+    private HistorialEstadoGateway repositorioHistorial;
     private CambiarEstadoIncidenteUseCase casoUso;
 
     @BeforeEach
@@ -42,7 +42,7 @@ class CambiarEstadoIncidenteUseCaseTest {
         );
 
         repositorioHistorial = mock(
-                RepositorioHistorialEstadoPort.class
+                HistorialEstadoGateway.class
         );
 
         casoUso = new CambiarEstadoIncidenteUseCase(

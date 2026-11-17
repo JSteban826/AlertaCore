@@ -4,18 +4,18 @@ import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccion
 import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
 import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
-import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioGeocodificacionGateway;
 
 import java.util.Objects;
 
 public final class GeocodificarDireccionUseCase
         implements GeocodificarDireccionPort {
 
-    private final ServicioGeocodificacionPort
+    private final ServicioGeocodificacionGateway
             servicioGeocodificacion;
 
     public GeocodificarDireccionUseCase(
-            ServicioGeocodificacionPort
+            ServicioGeocodificacionGateway
                     servicioGeocodificacion
     ) {
         this.servicioGeocodificacion =

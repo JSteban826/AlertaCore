@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.client.openmeteo;
 
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
-import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologicoGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +34,11 @@ class ServicioMeteorologicoCacheIntegrationTest {
 
     @Autowired
     @Qualifier("servicioCacheado")
-    private ServicioMeteorologicoPort servicio;
+    private ServicioMeteorologicoGateway servicio;
 
     @Autowired
     @Qualifier("servicioDelegado")
-    private ServicioMeteorologicoPort delegado;
+    private ServicioMeteorologicoGateway delegado;
 
     @Autowired
     private CacheManager cacheManager;
@@ -107,17 +107,17 @@ class ServicioMeteorologicoCacheIntegrationTest {
     static class ConfiguracionPrueba {
 
         @Bean("servicioDelegado")
-        public ServicioMeteorologicoPort servicioDelegado() {
+        public ServicioMeteorologicoGateway servicioDelegado() {
             return mock(
-                    ServicioMeteorologicoPort.class
+                    ServicioMeteorologicoGateway.class
             );
         }
 
         @Bean("servicioCacheado")
         @Primary
-        public ServicioMeteorologicoPort servicioCacheado(
+        public ServicioMeteorologicoGateway servicioCacheado(
                 @Qualifier("servicioDelegado")
-                ServicioMeteorologicoPort delegado
+                ServicioMeteorologicoGateway delegado
         ) {
             return new ServicioMeteorologicoCacheado(
                     delegado

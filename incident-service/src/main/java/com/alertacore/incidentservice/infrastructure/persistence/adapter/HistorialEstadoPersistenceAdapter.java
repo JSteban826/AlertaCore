@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.persistence.adapter;
 
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
-import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
+import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
 import com.alertacore.incidentservice.infrastructure.persistence.entity.HistorialEstadoIncidenteEntity;
 import com.alertacore.incidentservice.infrastructure.persistence.entity.IncidenteEntity;
 import com.alertacore.incidentservice.infrastructure.persistence.mapper.HistorialEstadoPersistenceMapper;
@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class HistorialEstadoPersistenceAdapter
-        implements RepositorioHistorialEstadoPort {
+        implements HistorialEstadoGateway {
 
     private final JpaHistorialEstadoRepository
             repositorioHistorialJpa;

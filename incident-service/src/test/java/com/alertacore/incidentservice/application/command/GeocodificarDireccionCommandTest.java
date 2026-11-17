@@ -1,5 +1,6 @@
 package com.alertacore.incidentservice.application.command;
 
+import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

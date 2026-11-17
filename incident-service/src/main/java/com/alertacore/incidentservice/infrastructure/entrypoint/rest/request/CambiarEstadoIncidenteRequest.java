@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest.request;
 
-import com.alertacore.incidentservice.application.command.CambiarEstadoIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

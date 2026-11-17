@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.integration;
 
-import com.alertacore.incidentservice.application.command.CambiarEstadoIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;

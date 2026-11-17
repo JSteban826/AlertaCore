@@ -1,5 +1,6 @@
 package com.alertacore.incidentservice.application.command;
 
+import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

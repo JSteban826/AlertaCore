@@ -1,6 +1,7 @@
 package com.alertacore.incidentservice.application.command;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

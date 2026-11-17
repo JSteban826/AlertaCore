@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest.request;
 
-import com.alertacore.incidentservice.application.command.RegistrarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;

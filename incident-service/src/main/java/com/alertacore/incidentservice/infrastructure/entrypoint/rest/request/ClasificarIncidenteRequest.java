@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest.request;
 
-import com.alertacore.incidentservice.application.command.ClasificarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
 
 import java.util.UUID;
 

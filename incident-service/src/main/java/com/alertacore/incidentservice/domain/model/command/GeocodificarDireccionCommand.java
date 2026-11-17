@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.application.command;
+package com.alertacore.incidentservice.domain.model.command;
 
 public record GeocodificarDireccionCommand(
         String direccion

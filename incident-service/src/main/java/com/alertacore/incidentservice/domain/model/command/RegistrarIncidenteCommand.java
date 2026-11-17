@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.application.command;
+package com.alertacore.incidentservice.domain.model.command;
 
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 

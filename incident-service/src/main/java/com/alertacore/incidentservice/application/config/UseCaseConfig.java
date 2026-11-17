@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.config;
+package com.alertacore.incidentservice.application.config;
 
 import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;

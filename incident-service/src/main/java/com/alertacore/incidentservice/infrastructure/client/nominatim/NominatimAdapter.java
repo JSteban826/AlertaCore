@@ -3,7 +3,7 @@ package com.alertacore.incidentservice.infrastructure.client.nominatim;
 import com.alertacore.incidentservice.domain.exception.DireccionNoEncontradaException;
 import com.alertacore.incidentservice.domain.exception.ServicioGeocodificacionException;
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
-import com.alertacore.incidentservice.domain.port.out.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
 import com.alertacore.incidentservice.infrastructure.client.nominatim.dto.NominatimSearchResponse;
 import org.springframework.web.client.RestClient;
 

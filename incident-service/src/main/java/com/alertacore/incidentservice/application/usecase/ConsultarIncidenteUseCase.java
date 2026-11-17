@@ -4,7 +4,7 @@ import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -12,10 +12,10 @@ import java.util.UUID;
 public final class ConsultarIncidenteUseCase
         implements ConsultarIncidentePort {
 
-    private final RepositorioIncidentePort repositorio;
+    private final IncidenteGateway repositorio;
 
     public ConsultarIncidenteUseCase(
-            RepositorioIncidentePort repositorio
+            IncidenteGateway repositorio
     ) {
         this.repositorio = Objects.requireNonNull(
                 repositorio,

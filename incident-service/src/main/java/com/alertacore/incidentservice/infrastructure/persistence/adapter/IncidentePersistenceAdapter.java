@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.persistence.adapter;
 
 import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 import com.alertacore.incidentservice.infrastructure.persistence.entity.IncidenteEntity;
 import com.alertacore.incidentservice.infrastructure.persistence.mapper.IncidentePersistenceMapper;
 import com.alertacore.incidentservice.infrastructure.persistence.repository.JpaIncidenteRepository;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class IncidentePersistenceAdapter
-        implements RepositorioIncidentePort {
+        implements IncidenteGateway {
 
     private final JpaIncidenteRepository repositorioJpa;
     private final IncidentePersistenceMapper mapper;

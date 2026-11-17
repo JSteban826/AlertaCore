@@ -6,17 +6,17 @@ import com.alertacore.incidentservice.application.port.in.RegistrarIncidentePort
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 
 import java.util.Objects;
 
 public final class RegistrarIncidenteUseCase
         implements RegistrarIncidentePort {
 
-    private final RepositorioIncidentePort repositorio;
+    private final IncidenteGateway repositorio;
 
     public RegistrarIncidenteUseCase(
-            RepositorioIncidentePort repositorio
+            IncidenteGateway repositorio
     ) {
         this.repositorio = Objects.requireNonNull(
                 repositorio,

@@ -3,7 +3,7 @@ package com.alertacore.incidentservice.infrastructure.persistence.adapter;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
-import com.alertacore.incidentservice.domain.port.out.RepositorioEstadisticasIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.RepositorioEstadisticasIncidentePort;
 import com.alertacore.incidentservice.infrastructure.persistence.projection.CantidadEstadoProjection;
 import com.alertacore.incidentservice.infrastructure.persistence.projection.CantidadNivelRiesgoProjection;
 import com.alertacore.incidentservice.infrastructure.persistence.projection.TiempoRespuestaProjection;

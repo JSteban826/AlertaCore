@@ -3,7 +3,7 @@ package com.alertacore.incidentservice.application.config;
 import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.application.usecase.*;
-import com.alertacore.incidentservice.domain.port.out.*;
+import com.alertacore.incidentservice.domain.gateway.*;
 import com.alertacore.incidentservice.domain.usecase.risk.*;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.EstadisticasIncidentePersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.persistence.adapter.HistorialEstadoPersistenceAdapter;
@@ -30,7 +30,7 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public RepositorioIncidentePort repositorioIncidentePort(
+    public IncidenteGateway repositorioIncidentePort(
             JpaIncidenteRepository repositorioJpa,
             IncidentePersistenceMapper mapper
     ) {
@@ -75,7 +75,7 @@ public class UseCaseConfig {
 
     @Bean
     public RegistrarIncidenteUseCase registrarIncidenteUseCase(
-            RepositorioIncidentePort repositorio
+            IncidenteGateway repositorio
     ) {
         return new RegistrarIncidenteUseCase(
                 repositorio
@@ -84,7 +84,7 @@ public class UseCaseConfig {
 
     @Bean
     public ClasificarIncidenteUseCase clasificarIncidenteUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             RepositorioHistorialEstadoPort repositorioHistorial,
             CalculadoraRiesgo calculadoraRiesgo
     ) {
@@ -97,7 +97,7 @@ public class UseCaseConfig {
 
     @Bean
     public ConsultarIncidenteUseCase consultarIncidenteUseCase(
-            RepositorioIncidentePort repositorio
+            IncidenteGateway repositorio
     ) {
         return new ConsultarIncidenteUseCase(
                 repositorio
@@ -105,7 +105,7 @@ public class UseCaseConfig {
     }
     @Bean
     public ListarIncidentesUseCase listarIncidentesUseCase(
-            RepositorioIncidentePort repositorio
+            IncidenteGateway repositorio
     ) {
         return new ListarIncidentesUseCase(repositorio);
     }
@@ -133,7 +133,7 @@ public class UseCaseConfig {
 
     @Bean
     public CambiarEstadoIncidenteUseCase cambiarEstadoIncidenteUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             RepositorioHistorialEstadoPort repositorioHistorial
     ) {
         return new CambiarEstadoIncidenteUseCase(
@@ -143,7 +143,7 @@ public class UseCaseConfig {
     }
     @Bean
     public ConsultarLineaTiempoUseCase consultarLineaTiempoUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             RepositorioHistorialEstadoPort repositorioHistorial
     ) {
         return new ConsultarLineaTiempoUseCase(
@@ -173,7 +173,7 @@ public class UseCaseConfig {
     @Bean
     public ConsultarRiesgoMeteorologicoUseCase
     consultarRiesgoMeteorologicoUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             ServicioMeteorologicoPort servicioMeteorologico
     ) {
         return new ConsultarRiesgoMeteorologicoUseCase(

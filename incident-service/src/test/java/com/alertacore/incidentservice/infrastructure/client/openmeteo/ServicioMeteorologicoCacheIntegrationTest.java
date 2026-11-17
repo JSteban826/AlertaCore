@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.client.openmeteo;
 
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
-import com.alertacore.incidentservice.domain.port.out.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.domain.port.out;
+package com.alertacore.incidentservice.domain.gateway;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
@@ -8,7 +8,7 @@ import com.alertacore.incidentservice.domain.model.Pagina;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface RepositorioIncidentePort {
+public interface IncidenteGateway {
 
     Incidente guardar(Incidente incidente);
 

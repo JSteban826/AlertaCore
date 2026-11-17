@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.config;
 
-import com.alertacore.incidentservice.domain.port.out.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
 import com.alertacore.incidentservice.infrastructure.client.nominatim.NominatimAdapter;
 import com.alertacore.incidentservice.infrastructure.client.nominatim.ServicioGeocodificacionCacheado;
 import org.springframework.beans.factory.annotation.Qualifier;

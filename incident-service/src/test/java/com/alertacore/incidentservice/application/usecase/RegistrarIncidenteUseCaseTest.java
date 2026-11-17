@@ -4,7 +4,7 @@ import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -14,13 +14,13 @@ import static org.mockito.Mockito.*;
 
 class RegistrarIncidenteUseCaseTest {
 
-    private RepositorioIncidentePort repositorio;
+    private IncidenteGateway repositorio;
     private RegistrarIncidenteUseCase casoUso;
 
     @BeforeEach
     void configurar() {
         repositorio = mock(
-                RepositorioIncidentePort.class
+                IncidenteGateway.class
         );
 
         casoUso = new RegistrarIncidenteUseCase(

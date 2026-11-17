@@ -8,8 +8,8 @@ import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoExce
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
-import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 import com.alertacore.incidentservice.domain.usecase.risk.CalculadoraRiesgo;
 import com.alertacore.incidentservice.domain.model.ContextoRiesgo;
 
@@ -24,12 +24,12 @@ public final class ClasificarIncidenteUseCase
     private static final String RESPONSABLE_CLASIFICACION =
             "SISTEMA_CLASIFICACION";
 
-    private final RepositorioIncidentePort repositorioIncidente;
+    private final IncidenteGateway repositorioIncidente;
     private final RepositorioHistorialEstadoPort repositorioHistorial;
     private final CalculadoraRiesgo calculadoraRiesgo;
 
     public ClasificarIncidenteUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             RepositorioHistorialEstadoPort repositorioHistorial,
             CalculadoraRiesgo calculadoraRiesgo
     ) {

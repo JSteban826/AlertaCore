@@ -2,7 +2,7 @@ package com.alertacore.incidentservice.infrastructure.client.openmeteo;
 
 import com.alertacore.incidentservice.domain.exception.ServicioMeteorologicoException;
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
-import com.alertacore.incidentservice.domain.port.out.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.dto.OpenMeteoCurrentResponse;
 import org.springframework.web.client.RestClient;
 

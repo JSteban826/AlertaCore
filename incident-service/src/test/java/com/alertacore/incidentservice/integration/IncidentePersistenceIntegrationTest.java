@@ -6,7 +6,7 @@ import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.Pagina;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +49,7 @@ class IncidentePersistenceIntegrationTest {
                     );
 
     @Autowired
-    private RepositorioIncidentePort repositorioIncidente;
+    private IncidenteGateway repositorioIncidente;
 
     @Test
     void debeGuardarYConsultarIncidentePorId() {

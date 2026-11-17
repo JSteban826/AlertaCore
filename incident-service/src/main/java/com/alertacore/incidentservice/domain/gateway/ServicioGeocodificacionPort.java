@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.domain.port.out;
+package com.alertacore.incidentservice.domain.gateway;
 
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
 

@@ -1,7 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.client.nominatim;
 
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
-import com.alertacore.incidentservice.domain.port.out.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Objects;

@@ -6,7 +6,7 @@ import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.Pagina;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 
 import java.util.Objects;
 
@@ -15,10 +15,10 @@ public final class ListarIncidentesUseCase
 
     private static final int TAMANIO_MAXIMO = 100;
 
-    private final RepositorioIncidentePort repositorio;
+    private final IncidenteGateway repositorio;
 
     public ListarIncidentesUseCase(
-            RepositorioIncidentePort repositorio
+            IncidenteGateway repositorio
     ) {
         this.repositorio = Objects.requireNonNull(
                 repositorio,

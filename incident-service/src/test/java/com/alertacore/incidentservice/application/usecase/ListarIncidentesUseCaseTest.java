@@ -7,7 +7,7 @@ import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.Pagina;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +22,13 @@ import static org.mockito.Mockito.when;
 
 class ListarIncidentesUseCaseTest {
 
-    private RepositorioIncidentePort repositorio;
+    private IncidenteGateway repositorio;
     private ListarIncidentesUseCase casoUso;
 
     @BeforeEach
     void configurar() {
         repositorio =
-                mock(RepositorioIncidentePort.class);
+                mock(IncidenteGateway.class);
 
         casoUso = new ListarIncidentesUseCase(
                 repositorio

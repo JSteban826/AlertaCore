@@ -7,8 +7,8 @@ import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
-import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 
 import java.util.Objects;
 
@@ -18,11 +18,11 @@ public final class CambiarEstadoIncidenteUseCase
     private static final String RESPONSABLE_PREDETERMINADO =
             "OPERADOR_API";
 
-    private final RepositorioIncidentePort repositorioIncidente;
+    private final IncidenteGateway repositorioIncidente;
     private final RepositorioHistorialEstadoPort repositorioHistorial;
 
     public CambiarEstadoIncidenteUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             RepositorioHistorialEstadoPort repositorioHistorial
     ) {
         this.repositorioIncidente = Objects.requireNonNull(

@@ -4,7 +4,7 @@ import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccion
 import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
 import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
-import com.alertacore.incidentservice.domain.port.out.ServicioGeocodificacionPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioGeocodificacionPort;
 
 import java.util.Objects;
 

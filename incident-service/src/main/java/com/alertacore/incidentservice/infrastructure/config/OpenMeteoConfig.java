@@ -1,6 +1,6 @@
 package com.alertacore.incidentservice.infrastructure.config;
 
-import com.alertacore.incidentservice.domain.port.out.ServicioMeteorologicoPort;
+import com.alertacore.incidentservice.domain.gateway.ServicioMeteorologicoPort;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.OpenMeteoAdapter;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.ServicioMeteorologicoCacheado;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import com.alertacore.incidentservice.infrastructure.client.openmeteo.ServicioMeteorologicoResiliente;
-import org.springframework.context.annotation.Primary;
+
 import java.time.Duration;
 
 @Configuration

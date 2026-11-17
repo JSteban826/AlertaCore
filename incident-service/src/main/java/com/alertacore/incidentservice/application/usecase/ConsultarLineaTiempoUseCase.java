@@ -3,8 +3,8 @@ package com.alertacore.incidentservice.application.usecase;
 import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
 import com.alertacore.incidentservice.application.port.in.ConsultarLineaTiempoPort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
-import com.alertacore.incidentservice.domain.port.out.RepositorioHistorialEstadoPort;
-import com.alertacore.incidentservice.domain.port.out.RepositorioIncidentePort;
+import com.alertacore.incidentservice.domain.gateway.RepositorioHistorialEstadoPort;
+import com.alertacore.incidentservice.domain.gateway.IncidenteGateway;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,11 +13,11 @@ import java.util.UUID;
 public final class ConsultarLineaTiempoUseCase
         implements ConsultarLineaTiempoPort {
 
-    private final RepositorioIncidentePort repositorioIncidente;
+    private final IncidenteGateway repositorioIncidente;
     private final RepositorioHistorialEstadoPort repositorioHistorial;
 
     public ConsultarLineaTiempoUseCase(
-            RepositorioIncidentePort repositorioIncidente,
+            IncidenteGateway repositorioIncidente,
             RepositorioHistorialEstadoPort repositorioHistorial
     ) {
         this.repositorioIncidente = Objects.requireNonNull(

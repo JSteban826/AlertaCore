@@ -1,10 +1,10 @@
-package com.alertacore.resourceservice.infrastructure.persistence.mapper;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.mapper;
 
 import com.alertacore.resourceservice.domain.enums.EstadoRecurso;
 import com.alertacore.resourceservice.domain.enums.TipoRecurso;
 import com.alertacore.resourceservice.domain.model.Recurso;
 import com.alertacore.resourceservice.domain.model.UbicacionRecurso;
-import com.alertacore.resourceservice.infrastructure.persistence.entity.RecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.RecursoEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

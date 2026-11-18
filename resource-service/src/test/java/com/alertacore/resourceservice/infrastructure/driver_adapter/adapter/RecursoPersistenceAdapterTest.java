@@ -1,12 +1,12 @@
-package com.alertacore.resourceservice.infrastructure.persistence.adapter;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.adapter;
 
 import com.alertacore.resourceservice.domain.enums.TipoRecurso;
 import com.alertacore.resourceservice.domain.model.Recurso;
 import com.alertacore.resourceservice.domain.model.UbicacionRecurso;
 
-import com.alertacore.resourceservice.infrastructure.persistence.entity.RecursoEntity;
-import com.alertacore.resourceservice.infrastructure.persistence.mapper.RecursoPersistenceMapper;
-import com.alertacore.resourceservice.infrastructure.persistence.repository.RecursoJpaRepository;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.RecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.mapper.RecursoPersistenceMapper;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.repository.RecursoJpaRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

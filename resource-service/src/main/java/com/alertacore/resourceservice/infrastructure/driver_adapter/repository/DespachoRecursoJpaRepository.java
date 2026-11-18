@@ -1,6 +1,6 @@
-package com.alertacore.resourceservice.infrastructure.persistence.repository;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.repository;
 
-import com.alertacore.resourceservice.infrastructure.persistence.entity.DespachoRecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.DespachoRecursoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

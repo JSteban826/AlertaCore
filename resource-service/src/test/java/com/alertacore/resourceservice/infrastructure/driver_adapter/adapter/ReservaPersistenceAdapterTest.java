@@ -1,11 +1,11 @@
-package com.alertacore.resourceservice.infrastructure.persistence.adapter;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.adapter;
 
 import com.alertacore.resourceservice.domain.enums.EstadoReserva;
 import com.alertacore.resourceservice.domain.model.ReservaRecurso;
 
-import com.alertacore.resourceservice.infrastructure.persistence.entity.ReservaRecursoEntity;
-import com.alertacore.resourceservice.infrastructure.persistence.mapper.ReservaPersistenceMapper;
-import com.alertacore.resourceservice.infrastructure.persistence.repository.ReservaRecursoJpaRepository;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.ReservaRecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.mapper.ReservaPersistenceMapper;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.repository.ReservaRecursoJpaRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

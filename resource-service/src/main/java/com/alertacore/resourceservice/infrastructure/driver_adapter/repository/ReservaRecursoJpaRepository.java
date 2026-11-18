@@ -1,6 +1,6 @@
-package com.alertacore.resourceservice.infrastructure.persistence.repository;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.repository;
 
-import com.alertacore.resourceservice.infrastructure.persistence.entity.ReservaRecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.ReservaRecursoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

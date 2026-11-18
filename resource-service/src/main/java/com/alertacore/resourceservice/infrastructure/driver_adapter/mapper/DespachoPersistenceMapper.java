@@ -1,7 +1,7 @@
-package com.alertacore.resourceservice.infrastructure.persistence.mapper;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.mapper;
 
 import com.alertacore.resourceservice.domain.model.DespachoRecurso;
-import com.alertacore.resourceservice.infrastructure.persistence.entity.DespachoRecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.DespachoRecursoEntity;
 import org.springframework.stereotype.Component;
 
 @Component

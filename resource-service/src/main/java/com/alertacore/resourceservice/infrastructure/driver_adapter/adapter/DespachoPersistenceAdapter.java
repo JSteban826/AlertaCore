@@ -1,9 +1,9 @@
-package com.alertacore.resourceservice.infrastructure.persistence.adapter;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.adapter;
 
 import com.alertacore.resourceservice.domain.model.DespachoRecurso;
 
-import com.alertacore.resourceservice.infrastructure.persistence.mapper.DespachoPersistenceMapper;
-import com.alertacore.resourceservice.infrastructure.persistence.repository.DespachoRecursoJpaRepository;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.mapper.DespachoPersistenceMapper;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.repository.DespachoRecursoJpaRepository;
 
 import com.alertacore.resourceservice.domain.model.gateway.DespachoRecursoGateway;
 

@@ -1,13 +1,13 @@
-package com.alertacore.resourceservice.infrastructure.persistence.adapter;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.adapter;
 
 import com.alertacore.resourceservice.domain.enums.EstadoRecurso;
 import com.alertacore.resourceservice.domain.enums.TipoRecurso;
 import com.alertacore.resourceservice.domain.model.Recurso;
 
 
-import com.alertacore.resourceservice.infrastructure.persistence.entity.RecursoEntity;
-import com.alertacore.resourceservice.infrastructure.persistence.mapper.RecursoPersistenceMapper;
-import com.alertacore.resourceservice.infrastructure.persistence.repository.RecursoJpaRepository;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.RecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.mapper.RecursoPersistenceMapper;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.repository.RecursoJpaRepository;
 
 import com.alertacore.resourceservice.domain.model.gateway.RecursoGateway;
 

@@ -1,10 +1,10 @@
-package com.alertacore.resourceservice.infrastructure.persistence.adapter;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.adapter;
 
 import com.alertacore.resourceservice.domain.model.DespachoRecurso;
 
-import com.alertacore.resourceservice.infrastructure.persistence.entity.DespachoRecursoEntity;
-import com.alertacore.resourceservice.infrastructure.persistence.mapper.DespachoPersistenceMapper;
-import com.alertacore.resourceservice.infrastructure.persistence.repository.DespachoRecursoJpaRepository;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.DespachoRecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.mapper.DespachoPersistenceMapper;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.repository.DespachoRecursoJpaRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

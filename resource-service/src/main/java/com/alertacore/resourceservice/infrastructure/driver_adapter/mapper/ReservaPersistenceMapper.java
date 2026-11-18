@@ -1,8 +1,8 @@
-package com.alertacore.resourceservice.infrastructure.persistence.mapper;
+package com.alertacore.resourceservice.infrastructure.driver_adapter.mapper;
 
 import com.alertacore.resourceservice.domain.enums.EstadoReserva;
 import com.alertacore.resourceservice.domain.model.ReservaRecurso;
-import com.alertacore.resourceservice.infrastructure.persistence.entity.ReservaRecursoEntity;
+import com.alertacore.resourceservice.infrastructure.driver_adapter.entity.ReservaRecursoEntity;
 import org.springframework.stereotype.Component;
 
 @Component

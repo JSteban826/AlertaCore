@@ -10,6 +10,7 @@ import com.alertacore.incidentservice.domain.exception.ServicioMeteorologicoExce
 import com.alertacore.incidentservice.domain.exception.ServicioRecursosException;
 import com.alertacore.incidentservice.domain.exception.TransicionEstadoInvalidaException;
 import jakarta.servlet.http.HttpServletRequest;
+import com.alertacore.incidentservice.domain.exception.IncidenteNoClasificadoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -79,6 +80,25 @@ public class ManejadorGlobalExcepciones {
 
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(error);
+    }
+    @ExceptionHandler(IncidenteNoClasificadoException.class)
+    public ResponseEntity<ErrorResponse>
+    manejarIncidenteNoClasificado(
+            IncidenteNoClasificadoException excepcion,
+            HttpServletRequest request
+    ) {
+
+        ErrorResponse error =
+                ErrorResponse.crear(
+                        HttpStatus.CONFLICT.value(),
+                        "INCIDENTE_NO_CLASIFICADO",
+                        excepcion.getMessage(),
+                        request.getRequestURI()
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(error);
     }
 

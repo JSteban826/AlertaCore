@@ -1,7 +1,9 @@
 package com.alertacore.incidentservice.domain.usecase;
 
+import com.alertacore.incidentservice.domain.model.AsignacionRecursoResultado;
 import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.command.AsignarRecursoCommand;
 import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
@@ -23,23 +25,14 @@ class IncidenteUseCaseTest {
     private RegistrarIncidenteUseCase registrar;
     private ConsultarIncidenteUseCase consultar;
     private ListarIncidentesUseCase listar;
-
     private CambiarEstadoIncidenteUseCase cambiarEstado;
     private ClasificarIncidenteUseCase clasificar;
-
     private ConsultarLineaTiempoUseCase lineaTiempo;
-
-    private ConsultarEstadisticasIncidentesUseCase
-            estadisticas;
-
-    private ConsultarRiesgoMeteorologicoUseCase
-            meteorologia;
-
-    private GeocodificarDireccionUseCase
-            geocodificacion;
-
+    private ConsultarEstadisticasIncidentesUseCase estadisticas;
+    private ConsultarRiesgoMeteorologicoUseCase meteorologia;
+    private GeocodificarDireccionUseCase geocodificacion;
+    private AsignarRecursoUseCase asignarRecurso;
     private TransaccionGateway transaccionGateway;
-
     private IncidenteUseCase incidenteUseCase;
 
     @BeforeEach
@@ -79,6 +72,10 @@ class IncidenteUseCaseTest {
 
         transaccionGateway =
                 mock(TransaccionGateway.class);
+        asignarRecurso =
+                mock(
+                        AsignarRecursoUseCase.class
+                );
 
         /*
          * El gateway simulado ejecuta inmediatamente
@@ -112,9 +109,11 @@ class IncidenteUseCaseTest {
                         estadisticas,
                         meteorologia,
                         geocodificacion,
+                        asignarRecurso,
                         transaccionGateway
                 );
     }
+
 
     @Test
     void debeDelegarLaConsultaDelIncidente() {
@@ -221,6 +220,47 @@ class IncidenteUseCaseTest {
                 );
 
         verify(clasificar)
+                .ejecutar(
+                        comando
+                );
+    }
+
+    @Test
+    void debeEjecutarAsignacionDentroDeTransaccion() {
+        AsignarRecursoCommand comando =
+                mock(
+                        AsignarRecursoCommand.class
+                );
+
+        AsignacionRecursoResultado esperado =
+                mock(
+                        AsignacionRecursoResultado.class
+                );
+
+        when(
+                asignarRecurso.ejecutar(
+                        comando
+                )
+        ).thenReturn(
+                esperado
+        );
+
+        AsignacionRecursoResultado resultado =
+                incidenteUseCase.asignarRecurso(
+                        comando
+                );
+
+        assertSame(
+                esperado,
+                resultado
+        );
+
+        verify(transaccionGateway)
+                .ejecutar(
+                        any()
+                );
+
+        verify(asignarRecurso)
                 .ejecutar(
                         comando
                 );

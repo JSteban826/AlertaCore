@@ -1,6 +1,9 @@
 package com.alertacore.incidentservice.infrastructure.entry_points.rest;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
+import com.alertacore.incidentservice.domain.model.AsignacionRecursoResultado;
+
+import com.alertacore.incidentservice.infrastructure.entry_points.rest.request.AsignarRecursoRequest;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
 import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
@@ -61,6 +64,103 @@ public class IncidenteController {
                         incidenteUseCase,
                         "El caso de uso de incidentes es obligatorio"
                 );
+    }
+    @Operation(
+            summary = "Asignar un recurso al incidente",
+            description = """
+                Busca el recurso disponible mas cercano del tipo
+                solicitado, lo reserva en resource-service y cambia
+                el incidente al estado RECURSO_ASIGNADO.
+                
+                Si falla la actualizacion local despues de reservar,
+                incident-service solicita la liberacion compensatoria
+                del recurso.
+                """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Recurso asignado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation =
+                                            AsignacionRecursoResultado.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Solicitud de asignacion invalida",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation =
+                                            ErrorResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                        Incidente inexistente o no existen recursos
+                        disponibles del tipo solicitado
+                        """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation =
+                                            ErrorResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = """
+                        El incidente no esta clasificado o el recurso
+                        dejo de estar disponible antes de reservarlo
+                        """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation =
+                                            ErrorResponse.class
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "503",
+                    description = "Resource Service no esta disponible",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    implementation =
+                                            ErrorResponse.class
+                            )
+                    )
+            )
+    })
+    @PostMapping("/{incidenteId}/asignaciones")
+    public ResponseEntity<AsignacionRecursoResultado>
+    asignarRecurso(
+            @PathVariable
+            UUID incidenteId,
+
+            @Valid
+            @RequestBody
+            AsignarRecursoRequest request
+    ) {
+
+        AsignacionRecursoResultado resultado =
+                incidenteUseCase.asignarRecurso(
+                        request.aComando(
+                                incidenteId
+                        )
+                );
+
+        return ResponseEntity.ok(
+                resultado
+        );
     }
 
     @Operation(

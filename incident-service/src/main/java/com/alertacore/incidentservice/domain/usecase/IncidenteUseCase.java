@@ -2,17 +2,8 @@ package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
-import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
-import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
-import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
-import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
-import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
-import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
-import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
-import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
-import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
-import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
-import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.*;
+import com.alertacore.incidentservice.domain.model.command.*;
 import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
 
 import java.util.List;
@@ -39,6 +30,8 @@ public final class IncidenteUseCase {
     private final GeocodificarDireccionUseCase
             geocodificacion;
 
+    private final AsignarRecursoUseCase asignarRecurso;
+
     private final TransaccionGateway transaccionGateway;
 
     public IncidenteUseCase(
@@ -51,6 +44,7 @@ public final class IncidenteUseCase {
             ConsultarEstadisticasIncidentesUseCase estadisticas,
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
             GeocodificarDireccionUseCase geocodificacion,
+            AsignarRecursoUseCase asignarRecurso,
             TransaccionGateway transaccionGateway
     ) {
         this.registrar = Objects.requireNonNull(
@@ -97,6 +91,11 @@ public final class IncidenteUseCase {
                 geocodificacion,
                 "El caso de uso de geocodificacion es obligatorio"
         );
+        this.asignarRecurso =
+                Objects.requireNonNull(
+                        asignarRecurso,
+                        "El caso de uso de asignacion es obligatorio"
+                );
 
         this.transaccionGateway = Objects.requireNonNull(
                 transaccionGateway,
@@ -111,6 +110,7 @@ public final class IncidenteUseCase {
                 comando
         );
     }
+
 
     public ResultadoIncidente consultarIncidente(
             UUID incidenteId
@@ -187,6 +187,15 @@ public final class IncidenteUseCase {
 
         return geocodificacion.ejecutar(
                 comando
+        );
+    }
+    public AsignacionRecursoResultado asignarRecurso(
+            AsignarRecursoCommand comando
+    ) {
+        return transaccionGateway.ejecutar(
+                () -> asignarRecurso.ejecutar(
+                        comando
+                )
         );
     }
 }

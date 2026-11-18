@@ -6,28 +6,16 @@ import com.alertacore.incidentservice.domain.usecase.risk.*;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.jpa_repository.adapter.EstadisticasIncidentePersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.jpa_repository.adapter.HistorialEstadoPersistenceAdapter;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.jpa_repository.adapter.IncidentePersistenceAdapter;
-import com.alertacore.incidentservice.infrastructure.mapper.HistorialEstadoPersistenceMapper;
-import com.alertacore.incidentservice.infrastructure.mapper.IncidentePersistenceMapper;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.jpa_repository.repository.JpaEstadisticasIncidenteRepository;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.jpa_repository.repository.JpaHistorialEstadoRepository;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.jpa_repository.repository.JpaIncidenteRepository;
 import com.alertacore.incidentservice.infrastructure.driver_adapter.transaction.SpringTransaccionAdapter;
+import com.alertacore.incidentservice.infrastructure.mapper.HistorialEstadoPersistenceMapper;
+import com.alertacore.incidentservice.infrastructure.mapper.IncidentePersistenceMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.alertacore.incidentservice.domain.model.gateway
-        .HistorialEstadoGateway;
-
-import com.alertacore.incidentservice.domain.model.gateway
-        .IncidenteGateway;
-
-import com.alertacore.incidentservice.domain.model.gateway
-        .ServicioRecursosGateway;
-
-import com.alertacore.incidentservice.domain.usecase
-        .AsignarRecursoUseCase;
 
 import java.util.List;
 
@@ -51,6 +39,7 @@ public class UseCaseConfig {
                 mapper
         );
     }
+
 
     @Bean
     public HistorialEstadoPersistenceMapper
@@ -234,6 +223,7 @@ public class UseCaseConfig {
             ConsultarEstadisticasIncidentesUseCase estadisticas,
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
             GeocodificarDireccionUseCase geocodificacion,
+            AsignarRecursoUseCase asignarRecurso,
             TransaccionGateway transaccionGateway
     ) {
         return new IncidenteUseCase(
@@ -246,6 +236,7 @@ public class UseCaseConfig {
                 estadisticas,
                 meteorologia,
                 geocodificacion,
+                asignarRecurso,
                 transaccionGateway
         );
     }
@@ -262,4 +253,5 @@ public class UseCaseConfig {
                 servicioRecursosGateway
         );
     }
+
 }

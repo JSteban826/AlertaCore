@@ -235,4 +235,29 @@ public class UseCaseConfig {
                 casoUso
         );
     }
+
+    @Bean
+    public IncidenteUseCase incidenteUseCase(
+            RegistrarIncidenteUseCase registrar,
+            ConsultarIncidenteUseCase consultar,
+            ListarIncidentesUseCase listar,
+            CambiarEstadoIncidentePort cambiarEstado,
+            ClasificarIncidentePort clasificar,
+            ConsultarLineaTiempoUseCase lineaTiempo,
+            ConsultarEstadisticasIncidentesUseCase estadisticas,
+            ConsultarRiesgoMeteorologicoUseCase meteorologia,
+            GeocodificarDireccionUseCase geocodificacion
+    ) {
+        return new IncidenteUseCase(
+                registrar,
+                consultar,
+                listar,
+                cambiarEstado,
+                clasificar,
+                lineaTiempo,
+                estadisticas,
+                meteorologia,
+                geocodificacion
+        );
+    }
 }

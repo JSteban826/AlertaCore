@@ -1,15 +1,17 @@
 package com.alertacore.incidentservice.integration;
 
-import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
-import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
 import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
+import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
+import com.alertacore.incidentservice.domain.usecase.IncidenteUseCase;
+import com.alertacore.incidentservice.infrastructure.transaction.SpringTransaccionAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,8 +30,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("testcontainers")
@@ -57,16 +59,20 @@ class TransaccionIncidenteIntegrationTest {
                     );
 
     @Autowired
-    private IncidenteGateway
-            repositorioIncidente;
+    private IncidenteGateway incidenteGateway;
 
     /*
-     * Spring inyectará CambiarEstadoTransaccional porque está
-     * marcado como @Primary en UseCaseConfig.
+     * Esta es la entrada única utilizada por el controlador.
+     *
+     * Para cambiar el estado, IncidenteUseCase utiliza
+     * TransaccionGateway antes de delegar en
+     * CambiarEstadoIncidenteUseCase.
      */
     @Autowired
-    private CambiarEstadoIncidentePort
-            cambiarEstadoIncidente;
+    private IncidenteUseCase incidenteUseCase;
+
+    @Autowired
+    private TransaccionGateway transaccionGateway;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -74,11 +80,12 @@ class TransaccionIncidenteIntegrationTest {
     @Test
     void debeRevertirCambioDeEstadoSiFallaElHistorial() {
         Incidente incidente =
-                repositorioIncidente.guardar(
+                incidenteGateway.guardar(
                         crearIncidente()
                 );
 
-        UUID incidenteId = incidente.getId();
+        UUID incidenteId =
+                incidente.getId();
 
         assertEquals(
                 EstadoIncidente.REPORTADO,
@@ -104,9 +111,11 @@ class TransaccionIncidenteIntegrationTest {
         RuntimeException excepcion =
                 assertThrows(
                         RuntimeException.class,
-                        () -> cambiarEstadoIncidente.ejecutar(
-                                comando
-                        )
+                        () ->
+                                incidenteUseCase
+                                        .cambiarEstadoIncidente(
+                                                comando
+                                        )
                 );
 
         assertEquals(
@@ -115,11 +124,14 @@ class TransaccionIncidenteIntegrationTest {
         );
 
         /*
-         * Aunque el caso de uso ejecutó primero:
+         * CambiarEstadoIncidenteUseCase guarda primero
+         * el incidente con estado VALIDADO.
          *
-         * repositorioIncidente.guardar(incidente)
+         * Después intenta guardar el historial y el gateway
+         * de prueba lanza una RuntimeException.
          *
-         * la RuntimeException posterior debe provocar rollback.
+         * SpringTransaccionAdapter debe revertir el primer
+         * guardado y conservar el estado REPORTADO.
          */
         assertEquals(
                 EstadoIncidente.REPORTADO,
@@ -129,8 +141,8 @@ class TransaccionIncidenteIntegrationTest {
         );
 
         /*
-         * El repositorio de historial falló, por lo que tampoco
-         * debe existir ningún registro histórico.
+         * No debe quedar ningún registro parcial en la tabla
+         * del historial.
          */
         assertEquals(
                 0,
@@ -140,11 +152,11 @@ class TransaccionIncidenteIntegrationTest {
         );
 
         /*
-         * La consulta por el puerto también debe reconstruir
-         * el incidente con el estado original.
+         * La consulta mediante el gateway también debe
+         * reconstruir el incidente con el estado original.
          */
         Incidente recuperado =
-                repositorioIncidente.buscarPorId(
+                incidenteGateway.buscarPorId(
                                 incidenteId
                         )
                         .orElseThrow();
@@ -156,31 +168,33 @@ class TransaccionIncidenteIntegrationTest {
     }
 
     @Test
-    void debeConfirmarQueElBeanPrincipalEsTransaccional() {
+    void debeUsarElAdaptadorTransaccionalDeSpring() {
         /*
-         * Spring crea un proxy alrededor del decorador por la
-         * anotación @Transactional.
+         * La transacción ya no depende de un decorador
+         * anotado con @Transactional.
+         *
+         * Ahora la implementación concreta del gateway
+         * utiliza TransactionTemplate.
          */
-        assertTrue(
-                org.springframework.aop.support
-                        .AopUtils.isAopProxy(
-                                cambiarEstadoIncidente
-                        )
+        assertInstanceOf(
+                SpringTransaccionAdapter.class,
+                transaccionGateway
         );
     }
 
     private EstadoIncidente consultarEstadoEnBaseDeDatos(
             UUID incidenteId
     ) {
-        String estado = jdbcTemplate.queryForObject(
-                """
-                SELECT estado
-                FROM incidents.incidentes
-                WHERE id = ?
-                """,
-                String.class,
-                incidenteId
-        );
+        String estado =
+                jdbcTemplate.queryForObject(
+                        """
+                        SELECT estado
+                        FROM incidents.incidentes
+                        WHERE id = ?
+                        """,
+                        String.class,
+                        incidenteId
+                );
 
         return EstadoIncidente.valueOf(
                 estado
@@ -231,18 +245,17 @@ class TransaccionIncidenteIntegrationTest {
     static class ConfiguracionFalloHistorial {
 
         /*
-         * Este bean reemplaza como opción principal al adaptador
-         * normal del historial únicamente dentro de esta prueba.
+         * Este bean sustituye como opción principal
+         * al adaptador normal de historial solamente
+         * dentro de esta prueba.
          *
-         * El caso de uso lo recibe porque ambos implementan
-         * RepositorioHistorialEstadoPort y este está marcado
-         * como @Primary.
+         * CambiarEstadoIncidenteUseCase recibe este gateway
+         * y provoca intencionalmente el fallo después de
+         * modificar el incidente.
          */
         @Bean
         @Primary
-        HistorialEstadoGateway
-        repositorioHistorialQueFalla() {
-
+        HistorialEstadoGateway historialEstadoGatewayQueFalla() {
             return new HistorialEstadoGateway() {
 
                 @Override
@@ -259,6 +272,7 @@ class TransaccionIncidenteIntegrationTest {
                 buscarPorIncidenteIdOrdenado(
                         UUID incidenteId
                 ) {
+
                     return List.of();
                 }
             };

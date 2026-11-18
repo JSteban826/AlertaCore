@@ -1,22 +1,16 @@
 package com.alertacore.incidentservice.domain.usecase;
 
-import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
-import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
-import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
-import com.alertacore.incidentservice.domain.model.Incidente;
-import com.alertacore.incidentservice.domain.model.PuntajeRiesgo;
-import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
+import com.alertacore.incidentservice.domain.model.*;
+import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
 import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import com.alertacore.incidentservice.domain.usecase.risk.CalculadoraRiesgo;
-import com.alertacore.incidentservice.domain.model.ContextoRiesgo;
 
 import java.util.Objects;
 
-public final class ClasificarIncidenteUseCase
-        implements ClasificarIncidentePort {
+public final class ClasificarIncidenteUseCase{
 
     private static final String MOTIVO_CLASIFICACION =
             "Clasificacion automatica de riesgo";
@@ -49,7 +43,6 @@ public final class ClasificarIncidenteUseCase
         );
     }
 
-    @Override
     public ResultadoClasificacion ejecutar(
             ClasificarIncidenteCommand comando
     ) {

@@ -1,19 +1,17 @@
 package com.alertacore.incidentservice.domain.usecase;
 
-import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
-import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
-import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.RegistroHistorialEstado;
+import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
 import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 
 import java.util.Objects;
 
-public final class CambiarEstadoIncidenteUseCase
-        implements CambiarEstadoIncidentePort {
+public final class CambiarEstadoIncidenteUseCase {
 
     private static final String RESPONSABLE_PREDETERMINADO =
             "OPERADOR_API";
@@ -36,7 +34,7 @@ public final class CambiarEstadoIncidenteUseCase
         );
     }
 
-    @Override
+
     public ResultadoIncidente ejecutar(
             CambiarEstadoIncidenteCommand comando
     ) {

@@ -1,16 +1,19 @@
 package com.alertacore.incidentservice.domain.usecase;
 
-import com.alertacore.incidentservice.application.port.in
-        .CambiarEstadoIncidentePort;
-import com.alertacore.incidentservice.application.port.in
-        .ClasificarIncidentePort;
+import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,8 +23,10 @@ class IncidenteUseCaseTest {
     private RegistrarIncidenteUseCase registrar;
     private ConsultarIncidenteUseCase consultar;
     private ListarIncidentesUseCase listar;
-    private CambiarEstadoIncidentePort cambiarEstado;
-    private ClasificarIncidentePort clasificar;
+
+    private CambiarEstadoIncidenteUseCase cambiarEstado;
+    private ClasificarIncidenteUseCase clasificar;
+
     private ConsultarLineaTiempoUseCase lineaTiempo;
 
     private ConsultarEstadisticasIncidentesUseCase
@@ -32,6 +37,8 @@ class IncidenteUseCaseTest {
 
     private GeocodificarDireccionUseCase
             geocodificacion;
+
+    private TransaccionGateway transaccionGateway;
 
     private IncidenteUseCase incidenteUseCase;
 
@@ -47,10 +54,10 @@ class IncidenteUseCaseTest {
                 mock(ListarIncidentesUseCase.class);
 
         cambiarEstado =
-                mock(CambiarEstadoIncidentePort.class);
+                mock(CambiarEstadoIncidenteUseCase.class);
 
         clasificar =
-                mock(ClasificarIncidentePort.class);
+                mock(ClasificarIncidenteUseCase.class);
 
         lineaTiempo =
                 mock(ConsultarLineaTiempoUseCase.class);
@@ -66,7 +73,33 @@ class IncidenteUseCaseTest {
                 );
 
         geocodificacion =
-                mock(GeocodificarDireccionUseCase.class);
+                mock(
+                        GeocodificarDireccionUseCase.class
+                );
+
+        transaccionGateway =
+                mock(TransaccionGateway.class);
+
+        /*
+         * El gateway simulado ejecuta inmediatamente
+         * la operación recibida.
+         *
+         * Esto permite probar que IncidenteUseCase
+         * envuelve correctamente las operaciones de
+         * cambio de estado y clasificación.
+         */
+        doAnswer(
+                invocacion -> {
+                    Supplier<?> operacion =
+                            invocacion.getArgument(0);
+
+                    return operacion.get();
+                }
+        ).when(
+                transaccionGateway
+        ).ejecutar(
+                any()
+        );
 
         incidenteUseCase =
                 new IncidenteUseCase(
@@ -78,7 +111,8 @@ class IncidenteUseCaseTest {
                         lineaTiempo,
                         estadisticas,
                         meteorologia,
-                        geocodificacion
+                        geocodificacion,
+                        transaccionGateway
                 );
     }
 
@@ -90,8 +124,12 @@ class IncidenteUseCaseTest {
                 mock(ResultadoIncidente.class);
 
         when(
-                consultar.ejecutar(incidenteId)
-        ).thenReturn(esperado);
+                consultar.ejecutar(
+                        incidenteId
+                )
+        ).thenReturn(
+                esperado
+        );
 
         ResultadoIncidente resultado =
                 incidenteUseCase.consultarIncidente(
@@ -104,6 +142,87 @@ class IncidenteUseCaseTest {
         );
 
         verify(consultar)
-                .ejecutar(incidenteId);
+                .ejecutar(
+                        incidenteId
+                );
+    }
+
+    @Test
+    void debeEjecutarCambioDeEstadoDentroDeTransaccion() {
+        CambiarEstadoIncidenteCommand comando =
+                mock(
+                        CambiarEstadoIncidenteCommand.class
+                );
+
+        ResultadoIncidente esperado =
+                mock(ResultadoIncidente.class);
+
+        when(
+                cambiarEstado.ejecutar(
+                        comando
+                )
+        ).thenReturn(
+                esperado
+        );
+
+        ResultadoIncidente resultado =
+                incidenteUseCase
+                        .cambiarEstadoIncidente(
+                                comando
+                        );
+
+        assertSame(
+                esperado,
+                resultado
+        );
+
+        verify(transaccionGateway)
+                .ejecutar(
+                        any()
+                );
+
+        verify(cambiarEstado)
+                .ejecutar(
+                        comando
+                );
+    }
+
+    @Test
+    void debeEjecutarClasificacionDentroDeTransaccion() {
+        ClasificarIncidenteCommand comando =
+                mock(
+                        ClasificarIncidenteCommand.class
+                );
+
+        ResultadoClasificacion esperado =
+                mock(ResultadoClasificacion.class);
+
+        when(
+                clasificar.ejecutar(
+                        comando
+                )
+        ).thenReturn(
+                esperado
+        );
+
+        ResultadoClasificacion resultado =
+                incidenteUseCase.clasificarIncidente(
+                        comando
+                );
+
+        assertSame(
+                esperado,
+                resultado
+        );
+
+        verify(transaccionGateway)
+                .ejecutar(
+                        any()
+                );
+
+        verify(clasificar)
+                .ejecutar(
+                        comando
+                );
     }
 }

@@ -1,21 +1,19 @@
-
 package com.alertacore.incidentservice.domain.usecase;
 
-import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
-import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
-import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
 import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
-import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
 import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
-import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
 import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
+import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,29 +25,33 @@ public final class IncidenteUseCase {
     private final ConsultarIncidenteUseCase consultar;
     private final ListarIncidentesUseCase listar;
 
-    /*
-     * Se conservan temporalmente estas interfaces
-     * porque sus implementaciones principales son
-     * decoradores con @Transactional.
-     */
-    private final CambiarEstadoIncidentePort cambiarEstado;
-    private final ClasificarIncidentePort clasificar;
+    private final CambiarEstadoIncidenteUseCase cambiarEstado;
+    private final ClasificarIncidenteUseCase clasificar;
 
     private final ConsultarLineaTiempoUseCase lineaTiempo;
-    private final ConsultarEstadisticasIncidentesUseCase estadisticas;
-    private final ConsultarRiesgoMeteorologicoUseCase meteorologia;
-    private final GeocodificarDireccionUseCase geocodificacion;
+
+    private final ConsultarEstadisticasIncidentesUseCase
+            estadisticas;
+
+    private final ConsultarRiesgoMeteorologicoUseCase
+            meteorologia;
+
+    private final GeocodificarDireccionUseCase
+            geocodificacion;
+
+    private final TransaccionGateway transaccionGateway;
 
     public IncidenteUseCase(
             RegistrarIncidenteUseCase registrar,
             ConsultarIncidenteUseCase consultar,
             ListarIncidentesUseCase listar,
-            CambiarEstadoIncidentePort cambiarEstado,
-            ClasificarIncidentePort clasificar,
+            CambiarEstadoIncidenteUseCase cambiarEstado,
+            ClasificarIncidenteUseCase clasificar,
             ConsultarLineaTiempoUseCase lineaTiempo,
             ConsultarEstadisticasIncidentesUseCase estadisticas,
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
-            GeocodificarDireccionUseCase geocodificacion
+            GeocodificarDireccionUseCase geocodificacion,
+            TransaccionGateway transaccionGateway
     ) {
         this.registrar = Objects.requireNonNull(
                 registrar,
@@ -73,40 +75,49 @@ public final class IncidenteUseCase {
 
         this.clasificar = Objects.requireNonNull(
                 clasificar,
-                "El caso de uso de clasificación es obligatorio"
+                "El caso de uso de clasificacion es obligatorio"
         );
 
         this.lineaTiempo = Objects.requireNonNull(
                 lineaTiempo,
-                "El caso de uso de línea de tiempo es obligatorio"
+                "El caso de uso de linea de tiempo es obligatorio"
         );
 
         this.estadisticas = Objects.requireNonNull(
                 estadisticas,
-                "El caso de uso de estadísticas es obligatorio"
+                "El caso de uso de estadisticas es obligatorio"
         );
 
         this.meteorologia = Objects.requireNonNull(
                 meteorologia,
-                "El caso de uso meteorológico es obligatorio"
+                "El caso de uso meteorologico es obligatorio"
         );
 
         this.geocodificacion = Objects.requireNonNull(
                 geocodificacion,
-                "El caso de uso de geocodificación es obligatorio"
+                "El caso de uso de geocodificacion es obligatorio"
+        );
+
+        this.transaccionGateway = Objects.requireNonNull(
+                transaccionGateway,
+                "El gateway transaccional es obligatorio"
         );
     }
 
     public ResultadoIncidente registrarIncidente(
             RegistrarIncidenteCommand comando
     ) {
-        return registrar.ejecutar(comando);
+        return registrar.ejecutar(
+                comando
+        );
     }
 
     public ResultadoIncidente consultarIncidente(
             UUID incidenteId
     ) {
-        return consultar.ejecutar(incidenteId);
+        return consultar.ejecutar(
+                incidenteId
+        );
     }
 
     public PaginaIncidentesResultado listarIncidentes(
@@ -126,34 +137,56 @@ public final class IncidenteUseCase {
     public ResultadoIncidente cambiarEstadoIncidente(
             CambiarEstadoIncidenteCommand comando
     ) {
-        return cambiarEstado.ejecutar(comando);
+        return transaccionGateway.ejecutar(
+                () -> cambiarEstado.ejecutar(
+                        comando
+                )
+        );
     }
 
     public ResultadoClasificacion clasificarIncidente(
             ClasificarIncidenteCommand comando
     ) {
-        return clasificar.ejecutar(comando);
+        return transaccionGateway.ejecutar(
+                () -> clasificar.ejecutar(
+                        comando
+                )
+        );
     }
 
-    public List<RegistroLineaTiempoResultado> consultarLineaTiempo(
+    public List<RegistroLineaTiempoResultado>
+    consultarLineaTiempo(
             UUID incidenteId
     ) {
-        return lineaTiempo.ejecutar(incidenteId);
+
+        return lineaTiempo.ejecutar(
+                incidenteId
+        );
     }
 
-    public EstadisticasIncidentesResultado consultarEstadisticas() {
+    public EstadisticasIncidentesResultado
+    consultarEstadisticas() {
+
         return estadisticas.ejecutar();
     }
 
-    public RiesgoMeteorologicoResultado consultarRiesgoMeteorologico(
+    public RiesgoMeteorologicoResultado
+    consultarRiesgoMeteorologico(
             UUID incidenteId
     ) {
-        return meteorologia.ejecutar(incidenteId);
+
+        return meteorologia.ejecutar(
+                incidenteId
+        );
     }
 
-    public GeocodificacionResultado geocodificarDireccion(
+    public GeocodificacionResultado
+    geocodificarDireccion(
             GeocodificarDireccionCommand comando
     ) {
-        return geocodificacion.ejecutar(comando);
+
+        return geocodificacion.ejecutar(
+                comando
+        );
     }
 }

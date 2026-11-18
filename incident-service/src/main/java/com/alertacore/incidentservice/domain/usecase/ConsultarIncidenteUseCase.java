@@ -1,7 +1,6 @@
 package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
-import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
@@ -9,8 +8,7 @@ import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import java.util.Objects;
 import java.util.UUID;
 
-public final class ConsultarIncidenteUseCase
-        implements ConsultarIncidentePort {
+public final class ConsultarIncidenteUseCase {
 
     private final IncidenteGateway repositorio;
 
@@ -23,7 +21,7 @@ public final class ConsultarIncidenteUseCase
         );
     }
 
-    @Override
+
     public ResultadoIncidente ejecutar(
             UUID incidenteId
     ) {

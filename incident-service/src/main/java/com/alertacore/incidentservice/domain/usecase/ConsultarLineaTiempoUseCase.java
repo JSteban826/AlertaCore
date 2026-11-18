@@ -1,7 +1,6 @@
 package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
-import com.alertacore.incidentservice.application.port.in.ConsultarLineaTiempoPort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGateway;
 import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
@@ -10,8 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public final class ConsultarLineaTiempoUseCase
-        implements ConsultarLineaTiempoPort {
+public final class ConsultarLineaTiempoUseCase {
 
     private final IncidenteGateway repositorioIncidente;
     private final HistorialEstadoGateway repositorioHistorial;
@@ -31,7 +29,7 @@ public final class ConsultarLineaTiempoUseCase
         );
     }
 
-    @Override
+
     public List<RegistroLineaTiempoResultado> ejecutar(
             UUID incidenteId
     ) {

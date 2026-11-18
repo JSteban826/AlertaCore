@@ -1,9 +1,5 @@
 package com.alertacore.incidentservice.application.config;
 
-import com.alertacore.incidentservice.application.port.in
-        .CambiarEstadoIncidentePort;
-import com.alertacore.incidentservice.application.port.in
-        .ClasificarIncidentePort;
 import com.alertacore.incidentservice.domain.model.gateway.*;
 import com.alertacore.incidentservice.domain.usecase.*;
 import com.alertacore.incidentservice.domain.usecase.risk.*;
@@ -23,13 +19,11 @@ import com.alertacore.incidentservice.infrastructure.persistence.repository
         .JpaHistorialEstadoRepository;
 import com.alertacore.incidentservice.infrastructure.persistence.repository
         .JpaIncidenteRepository;
-import com.alertacore.incidentservice.infrastructure.transaction
-        .CambiarEstadoTransaccional;
-import com.alertacore.incidentservice.infrastructure.transaction
-        .ClasificarIncidenteTransaccional;
+import com.alertacore.incidentservice.infrastructure.transaction.SpringTransaccionAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -71,6 +65,19 @@ public class UseCaseConfig {
                 repositorioHistorialJpa,
                 repositorioIncidenteJpa,
                 mapper
+        );
+    }
+    @Bean
+    public TransaccionGateway transaccionGateway(
+            PlatformTransactionManager transactionManager
+    ) {
+        TransactionTemplate transactionTemplate =
+                new TransactionTemplate(
+                        transactionManager
+                );
+
+        return new SpringTransaccionAdapter(
+                transactionTemplate
         );
     }
 
@@ -213,40 +220,17 @@ public class UseCaseConfig {
     }
 
     @Bean
-    @Primary
-    public ClasificarIncidentePort
-    clasificarIncidenteTransaccional(
-            ClasificarIncidenteUseCase casoUso
-    ) {
-
-        return new ClasificarIncidenteTransaccional(
-                casoUso
-        );
-    }
-
-    @Bean
-    @Primary
-    public CambiarEstadoIncidentePort
-    cambiarEstadoTransaccional(
-            CambiarEstadoIncidenteUseCase casoUso
-    ) {
-
-        return new CambiarEstadoTransaccional(
-                casoUso
-        );
-    }
-
-    @Bean
     public IncidenteUseCase incidenteUseCase(
             RegistrarIncidenteUseCase registrar,
             ConsultarIncidenteUseCase consultar,
             ListarIncidentesUseCase listar,
-            CambiarEstadoIncidentePort cambiarEstado,
-            ClasificarIncidentePort clasificar,
+            CambiarEstadoIncidenteUseCase cambiarEstado,
+            ClasificarIncidenteUseCase clasificar,
             ConsultarLineaTiempoUseCase lineaTiempo,
             ConsultarEstadisticasIncidentesUseCase estadisticas,
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
-            GeocodificarDireccionUseCase geocodificacion
+            GeocodificarDireccionUseCase geocodificacion,
+            TransaccionGateway transaccionGateway
     ) {
         return new IncidenteUseCase(
                 registrar,
@@ -257,7 +241,8 @@ public class UseCaseConfig {
                 lineaTiempo,
                 estadisticas,
                 meteorologia,
-                geocodificacion
+                geocodificacion,
+                transaccionGateway
         );
     }
 }

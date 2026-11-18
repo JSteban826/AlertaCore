@@ -1,7 +1,6 @@
 package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
-import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.model.CondicionMeteorologica;
 import com.alertacore.incidentservice.domain.model.Incidente;
@@ -11,8 +10,7 @@ import com.alertacore.incidentservice.domain.model.gateway.ServicioMeteorologico
 import java.util.Objects;
 import java.util.UUID;
 
-public final class ConsultarRiesgoMeteorologicoUseCase
-        implements ConsultarRiesgoMeteorologicoPort {
+public final class ConsultarRiesgoMeteorologicoUseCase{
 
     private final IncidenteGateway repositorioIncidente;
     private final ServicioMeteorologicoGateway servicioMeteorologico;
@@ -32,7 +30,6 @@ public final class ConsultarRiesgoMeteorologicoUseCase
         );
     }
 
-    @Override
     public RiesgoMeteorologicoResultado ejecutar(
             UUID incidenteId
     ) {

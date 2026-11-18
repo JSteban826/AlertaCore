@@ -2,7 +2,6 @@ package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
-import com.alertacore.incidentservice.application.port.in.RegistrarIncidentePort;
 import com.alertacore.incidentservice.domain.model.Incidente;
 import com.alertacore.incidentservice.domain.model.InformacionContacto;
 import com.alertacore.incidentservice.domain.model.Ubicacion;
@@ -11,7 +10,7 @@ import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import java.util.Objects;
 
 public final class RegistrarIncidenteUseCase
-        implements RegistrarIncidentePort {
+       {
 
     private final IncidenteGateway repositorio;
 
@@ -24,7 +23,7 @@ public final class RegistrarIncidenteUseCase
         );
     }
 
-    @Override
+
     public ResultadoIncidente ejecutar(
             RegistrarIncidenteCommand comando
     ) {

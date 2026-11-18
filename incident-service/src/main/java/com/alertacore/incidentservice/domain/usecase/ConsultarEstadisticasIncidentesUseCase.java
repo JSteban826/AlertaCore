@@ -1,14 +1,12 @@
 package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
-import com.alertacore.incidentservice.application.port.in.ConsultarEstadisticasIncidentesPort;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentes;
 import com.alertacore.incidentservice.domain.model.gateway.EstadisticasIncidenteGateway;
 
 import java.util.Objects;
 
-public final class ConsultarEstadisticasIncidentesUseCase
-        implements ConsultarEstadisticasIncidentesPort {
+public final class ConsultarEstadisticasIncidentesUseCase {
 
     private final EstadisticasIncidenteGateway repositorio;
 
@@ -21,7 +19,7 @@ public final class ConsultarEstadisticasIncidentesUseCase
         );
     }
 
-    @Override
+
     public EstadisticasIncidentesResultado ejecutar() {
         EstadisticasIncidentes estadisticas =
                 repositorio.obtenerEstadisticas();

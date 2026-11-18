@@ -1,7 +1,6 @@
 package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
-import com.alertacore.incidentservice.application.port.in.ListarIncidentesPort;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.model.Incidente;
@@ -10,8 +9,7 @@ import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 
 import java.util.Objects;
 
-public final class ListarIncidentesUseCase
-        implements ListarIncidentesPort {
+public final class ListarIncidentesUseCase {
 
     private static final int TAMANIO_MAXIMO = 100;
 
@@ -26,7 +24,7 @@ public final class ListarIncidentesUseCase
         );
     }
 
-    @Override
+
     public PaginaIncidentesResultado ejecutar(
             EstadoIncidente estado,
             TipoIncidente tipo,

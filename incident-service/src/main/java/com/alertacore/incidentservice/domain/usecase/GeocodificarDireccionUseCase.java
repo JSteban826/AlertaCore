@@ -2,14 +2,12 @@ package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
 import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
-import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 import com.alertacore.incidentservice.domain.model.ResultadoGeocodificacion;
 import com.alertacore.incidentservice.domain.model.gateway.ServicioGeocodificacionGateway;
 
 import java.util.Objects;
 
-public final class GeocodificarDireccionUseCase
-        implements GeocodificarDireccionPort {
+public final class GeocodificarDireccionUseCase {
 
     private final ServicioGeocodificacionGateway
             servicioGeocodificacion;
@@ -25,7 +23,6 @@ public final class GeocodificarDireccionUseCase
                 );
     }
 
-    @Override
     public GeocodificacionResultado ejecutar(
             GeocodificarDireccionCommand comando
     ) {

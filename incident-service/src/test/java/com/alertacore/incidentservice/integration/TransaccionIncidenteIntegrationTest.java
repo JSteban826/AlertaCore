@@ -11,7 +11,7 @@ import com.alertacore.incidentservice.domain.model.gateway.HistorialEstadoGatewa
 import com.alertacore.incidentservice.domain.model.gateway.IncidenteGateway;
 import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
 import com.alertacore.incidentservice.domain.usecase.IncidenteUseCase;
-import com.alertacore.incidentservice.infrastructure.transaction.SpringTransaccionAdapter;
+import com.alertacore.incidentservice.infrastructure.driver_adapter.transaction.SpringTransaccionAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,5 +1,7 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
 
+import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
+import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
 import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
 import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
@@ -7,17 +9,7 @@ import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
 import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
-import com.alertacore.incidentservice.application.port.in.CambiarEstadoIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ClasificarIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ConsultarEstadisticasIncidentesPort;
-import com.alertacore.incidentservice.application.port.in.ConsultarIncidentePort;
-import com.alertacore.incidentservice.application.port.in.ConsultarLineaTiempoPort;
-import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
-import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
-import com.alertacore.incidentservice.application.port.in.ListarIncidentesPort;
-import com.alertacore.incidentservice.application.port.in.RegistrarIncidentePort;
-import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
-import com.alertacore.incidentservice.domain.enums.TipoIncidente;
+import com.alertacore.incidentservice.domain.usecase.IncidenteUseCase;
 import com.alertacore.incidentservice.infrastructure.entrypoint.rest.exception.ErrorResponse;
 import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.CambiarEstadoIncidenteRequest;
 import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.ClasificarIncidenteRequest;
@@ -59,87 +51,15 @@ import java.util.UUID;
 @RequestMapping("/api/v1/incidentes")
 public class IncidenteController {
 
-    private final RegistrarIncidentePort registrarIncidente;
-    private final ConsultarIncidentePort consultarIncidente;
-    private final ConsultarLineaTiempoPort consultarLineaTiempo;
-    private final ListarIncidentesPort listarIncidentes;
-
-    private final ConsultarEstadisticasIncidentesPort
-            consultarEstadisticas;
-
-    private final ConsultarRiesgoMeteorologicoPort
-            consultarRiesgoMeteorologico;
-
-    private final GeocodificarDireccionPort
-            geocodificarDireccion;
-
-    private final ClasificarIncidentePort
-            clasificarIncidente;
-
-    private final CambiarEstadoIncidentePort
-            cambiarEstadoIncidente;
+    private final IncidenteUseCase incidenteUseCase;
 
     public IncidenteController(
-            RegistrarIncidentePort registrarIncidente,
-            ConsultarIncidentePort consultarIncidente,
-            ConsultarLineaTiempoPort consultarLineaTiempo,
-            ListarIncidentesPort listarIncidentes,
-            ConsultarEstadisticasIncidentesPort
-                    consultarEstadisticas,
-            ConsultarRiesgoMeteorologicoPort
-                    consultarRiesgoMeteorologico,
-            GeocodificarDireccionPort geocodificarDireccion,
-            ClasificarIncidentePort clasificarIncidente,
-            CambiarEstadoIncidentePort cambiarEstadoIncidente
+            IncidenteUseCase incidenteUseCase
     ) {
-        this.registrarIncidente = Objects.requireNonNull(
-                registrarIncidente,
-                "El caso de uso para registrar es obligatorio"
-        );
-
-        this.consultarIncidente = Objects.requireNonNull(
-                consultarIncidente,
-                "El caso de uso para consultar es obligatorio"
-        );
-
-        this.consultarLineaTiempo = Objects.requireNonNull(
-                consultarLineaTiempo,
-                "El caso de uso para consultar la linea de tiempo es obligatorio"
-        );
-
-        this.listarIncidentes = Objects.requireNonNull(
-                listarIncidentes,
-                "El caso de uso para listar es obligatorio"
-        );
-
-        this.consultarEstadisticas =
+        this.incidenteUseCase =
                 Objects.requireNonNull(
-                        consultarEstadisticas,
-                        "El caso de uso de estadisticas es obligatorio"
-                );
-
-        this.consultarRiesgoMeteorologico =
-                Objects.requireNonNull(
-                        consultarRiesgoMeteorologico,
-                        "El caso de uso meteorologico es obligatorio"
-                );
-
-        this.geocodificarDireccion =
-                Objects.requireNonNull(
-                        geocodificarDireccion,
-                        "El caso de uso para geocodificar es obligatorio"
-                );
-
-        this.clasificarIncidente =
-                Objects.requireNonNull(
-                        clasificarIncidente,
-                        "El caso de uso para clasificar es obligatorio"
-                );
-
-        this.cambiarEstadoIncidente =
-                Objects.requireNonNull(
-                        cambiarEstadoIncidente,
-                        "El caso de uso para cambiar estado es obligatorio"
+                        incidenteUseCase,
+                        "El caso de uso de incidentes es obligatorio"
                 );
     }
 
@@ -158,12 +78,14 @@ public class IncidenteController {
                     headers = {
                             @Header(
                                     name = "Location",
-                                    description = """
-                                            Ruta del incidente registrado
-                                            """,
+                                    description =
+                                            "Ruta del incidente registrado",
                                     schema = @Schema(
                                             type = "string",
-                                            example = "/api/v1/incidentes/9bb9d4da-c93e-4a54-9f44-fd2119662d93"
+                                            example =
+                                                    "/api/v1/incidentes/"
+                                                            + "9bb9d4da-c93e-4a54-"
+                                                            + "9f44-fd2119662d93"
                                     )
                             )
                     },
@@ -183,22 +105,6 @@ public class IncidenteController {
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Solicitud invalida",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 400,
-                                              "codigo": "SOLICITUD_INVALIDA",
-                                              "mensaje": "La solicitud contiene datos invalidos",
-                                              "ruta": "/api/v1/incidentes",
-                                              "erroresValidacion": {
-                                                "tipo": "El tipo es obligatorio",
-                                                "descripcion": "La descripcion debe tener entre 10 y 500 caracteres"
-                                              }
-                                            }
-                                            """
                             )
                     )
             ),
@@ -221,13 +127,15 @@ public class IncidenteController {
             RegistrarIncidenteRequest request
     ) {
         ResultadoIncidente resultado =
-                registrarIncidente.ejecutar(
+                incidenteUseCase.registrarIncidente(
                         request.aComando()
                 );
 
-        URI ubicacionRecurso = URI.create(
-                "/api/v1/incidentes/" + resultado.id()
-        );
+        URI ubicacionRecurso =
+                URI.create(
+                        "/api/v1/incidentes/"
+                                + resultado.id()
+                );
 
         return ResponseEntity
                 .created(ubicacionRecurso)
@@ -246,9 +154,8 @@ public class IncidenteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = """
-                            Direccion geocodificada correctamente
-                            """,
+                    description =
+                            "Direccion geocodificada correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -259,86 +166,37 @@ public class IncidenteController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = """
-                            Direccion vacia, demasiado corta o invalida
-                            """,
+                    description =
+                            "Direccion vacia, demasiado corta o invalida",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Direccion invalida",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 400,
-                                              "codigo": "SOLICITUD_INVALIDA",
-                                              "mensaje": "La solicitud contiene datos invalidos",
-                                              "ruta": "/api/v1/incidentes/geocodificar",
-                                              "erroresValidacion": {
-                                                "direccion": "La direccion debe tener entre 5 y 250 caracteres"
-                                              }
-                                            }
-                                            """
                             )
                     )
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = """
-                            No se encontraron coordenadas para
-                            la direccion
-                            """,
+                    description =
+                            "No se encontraron coordenadas para la direccion",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Direccion no encontrada",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 404,
-                                              "codigo": "DIRECCION_NO_ENCONTRADA",
-                                              "mensaje": "No se encontraron coordenadas para la direccion solicitada",
-                                              "ruta": "/api/v1/incidentes/geocodificar",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             ),
             @ApiResponse(
                     responseCode = "503",
-                    description = """
-                            El servicio de geocodificacion
-                            no esta disponible
-                            """,
+                    description =
+                            "El servicio de geocodificacion no esta disponible",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = """
-                                            Servicio de geocodificacion
-                                            no disponible
-                                            """,
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 503,
-                                              "codigo": "SERVICIO_GEOCODIFICACION_NO_DISPONIBLE",
-                                              "mensaje": "No fue posible consultar Nominatim",
-                                              "ruta": "/api/v1/incidentes/geocodificar",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             )
@@ -352,7 +210,7 @@ public class IncidenteController {
     ) {
 
         GeocodificacionResultado resultado =
-                geocodificarDireccion.ejecutar(
+                incidenteUseCase.geocodificarDireccion(
                         request.aComando()
                 );
 
@@ -388,19 +246,6 @@ public class IncidenteController {
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Incidente no encontrado",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 404,
-                                              "codigo": "INCIDENTE_NO_ENCONTRADO",
-                                              "mensaje": "No se encontro el incidente solicitado",
-                                              "ruta": "/api/v1/incidentes/11111111-1111-1111-1111-111111111111",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             ),
@@ -424,7 +269,7 @@ public class IncidenteController {
     ) {
 
         ResultadoIncidente resultado =
-                consultarIncidente.ejecutar(
+                incidenteUseCase.consultarIncidente(
                         incidenteId
                 );
 
@@ -443,9 +288,8 @@ public class IncidenteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = """
-                            Pagina de incidentes obtenida correctamente
-                            """,
+                    description =
+                            "Pagina de incidentes obtenida correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -456,10 +300,8 @@ public class IncidenteController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = """
-                            Numero de pagina, tamanio, estado o tipo
-                            de incidente invalido
-                            """,
+                    description =
+                            "Numero de pagina, tamanio, estado o tipo invalido",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -468,13 +310,8 @@ public class IncidenteController {
                             ),
                             examples = @ExampleObject(
                                     name = "Paginacion invalida",
-                                    summary = """
-                                            El tamanio supera el limite
-                                            permitido
-                                            """,
                                     value = """
                                             {
-                                              "timestamp": "2026-11-16T12:50:00",
                                               "estado": 400,
                                               "codigo": "ARGUMENTO_INVALIDO",
                                               "mensaje": "El tamanio de pagina no puede superar 100",
@@ -493,19 +330,6 @@ public class IncidenteController {
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Error interno",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 500,
-                                              "codigo": "ERROR_INTERNO",
-                                              "mensaje": "Ocurrio un error interno inesperado",
-                                              "ruta": "/api/v1/incidentes",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             )
@@ -525,7 +349,7 @@ public class IncidenteController {
             int size
     ) {
         PaginaIncidentesResultado resultado =
-                listarIncidentes.ejecutar(
+                incidenteUseCase.listarIncidentes(
                         estado,
                         tipo,
                         page,
@@ -548,9 +372,8 @@ public class IncidenteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = """
-                            Incidente clasificado correctamente
-                            """,
+                    description =
+                            "Incidente clasificado correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -561,9 +384,8 @@ public class IncidenteController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = """
-                            Solicitud de clasificacion invalida
-                            """,
+                    description =
+                            "Solicitud de clasificacion invalida",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -585,30 +407,13 @@ public class IncidenteController {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = """
-                            El estado actual del incidente no permite
-                            ejecutar la clasificacion
-                            """,
+                    description =
+                            "El estado actual no permite clasificar",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = """
-                                            Transicion de estado invalida
-                                            """,
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 409,
-                                              "codigo": "TRANSICION_ESTADO_INVALIDA",
-                                              "mensaje": "No es posible clasificar un incidente en estado REPORTADO",
-                                              "ruta": "/api/v1/incidentes/11111111-1111-1111-1111-111111111111/clasificar",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             ),
@@ -634,8 +439,10 @@ public class IncidenteController {
             ClasificarIncidenteRequest request
     ) {
         ResultadoClasificacion resultado =
-                clasificarIncidente.ejecutar(
-                        request.aComando(incidenteId)
+                incidenteUseCase.clasificarIncidente(
+                        request.aComando(
+                                incidenteId
+                        )
                 );
 
         return ResponseEntity.ok(resultado);
@@ -653,9 +460,8 @@ public class IncidenteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = """
-                            Linea de tiempo obtenida en orden cronologico
-                            """,
+                    description =
+                            "Linea de tiempo obtenida correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(
@@ -697,7 +503,7 @@ public class IncidenteController {
     ) {
 
         List<RegistroLineaTiempoResultado> resultado =
-                consultarLineaTiempo.ejecutar(
+                incidenteUseCase.consultarLineaTiempo(
                         incidenteId
                 );
 
@@ -749,27 +555,13 @@ public class IncidenteController {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = """
-                            Transicion de estado no permitida
-                            """,
+                    description =
+                            "Transicion de estado no permitida",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Transicion invalida",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 409,
-                                              "codigo": "TRANSICION_ESTADO_INVALIDA",
-                                              "mensaje": "No es posible cambiar el incidente de CLASIFICADO a CERRADO",
-                                              "ruta": "/api/v1/incidentes/11111111-1111-1111-1111-111111111111/estado",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             ),
@@ -795,8 +587,10 @@ public class IncidenteController {
             CambiarEstadoIncidenteRequest request
     ) {
         ResultadoIncidente resultado =
-                cambiarEstadoIncidente.ejecutar(
-                        request.aComando(incidenteId)
+                incidenteUseCase.cambiarEstadoIncidente(
+                        request.aComando(
+                                incidenteId
+                        )
                 );
 
         return ResponseEntity.ok(resultado);
@@ -814,9 +608,8 @@ public class IncidenteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = """
-                            Estadisticas obtenidas correctamente
-                            """,
+                    description =
+                            "Estadisticas obtenidas correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -827,9 +620,8 @@ public class IncidenteController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = """
-                            Error al calcular las estadisticas
-                            """,
+                    description =
+                            "Error al calcular las estadisticas",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -844,7 +636,7 @@ public class IncidenteController {
     consultarEstadisticas() {
 
         EstadisticasIncidentesResultado resultado =
-                consultarEstadisticas.ejecutar();
+                incidenteUseCase.consultarEstadisticas();
 
         return ResponseEntity.ok(resultado);
     }
@@ -862,9 +654,8 @@ public class IncidenteController {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = """
-                            Riesgo meteorologico obtenido correctamente
-                            """,
+                    description =
+                            "Riesgo meteorologico obtenido correctamente",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
@@ -881,49 +672,18 @@ public class IncidenteController {
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = "Incidente no encontrado",
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 404,
-                                              "codigo": "INCIDENTE_NO_ENCONTRADO",
-                                              "mensaje": "No se encontro el incidente solicitado",
-                                              "ruta": "/api/v1/incidentes/11111111-1111-1111-1111-111111111111/riesgo-meteorologico",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             ),
             @ApiResponse(
                     responseCode = "503",
-                    description = """
-                            Open-Meteo no esta disponible o el
-                            circuit breaker se encuentra abierto
-                            """,
+                    description =
+                            "Open-Meteo no esta disponible o el circuit breaker esta abierto",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(
                                     implementation =
                                             ErrorResponse.class
-                            ),
-                            examples = @ExampleObject(
-                                    name = """
-                                            Servicio meteorologico
-                                            no disponible
-                                            """,
-                                    value = """
-                                            {
-                                              "timestamp": "2026-11-16T12:50:00",
-                                              "estado": 503,
-                                              "codigo": "SERVICIO_METEOROLOGICO_NO_DISPONIBLE",
-                                              "mensaje": "El servicio meteorologico no se encuentra disponible",
-                                              "ruta": "/api/v1/incidentes/11111111-1111-1111-1111-111111111111/riesgo-meteorologico",
-                                              "erroresValidacion": {}
-                                            }
-                                            """
                             )
                     )
             ),
@@ -947,9 +707,10 @@ public class IncidenteController {
     ) {
 
         RiesgoMeteorologicoResultado resultado =
-                consultarRiesgoMeteorologico.ejecutar(
-                        incidenteId
-                );
+                incidenteUseCase
+                        .consultarRiesgoMeteorologico(
+                                incidenteId
+                        );
 
         return ResponseEntity.ok(resultado);
     }

@@ -1,91 +1,50 @@
 package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
 
-import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
-import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
-import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
-import com.alertacore.incidentservice.application.port.in.*;
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgoMeteorologico;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
 import com.alertacore.incidentservice.domain.exception.IncidenteNoEncontradoException;
 import com.alertacore.incidentservice.domain.exception.TransicionEstadoInvalidaException;
+import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
+import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
+import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.domain.usecase.IncidenteUseCase;
 import com.alertacore.incidentservice.infrastructure.entrypoint.rest.exception.ManejadorGlobalExcepciones;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.alertacore.incidentservice.application.port.in.GeocodificarDireccionPort;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import com.alertacore.incidentservice.application.port.in.ConsultarRiesgoMeteorologicoPort;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class IncidenteControllerTest {
 
-    private RegistrarIncidentePort registrarIncidente;
-    private ConsultarIncidentePort consultarIncidente;
-    private ConsultarLineaTiempoPort consultarLineaTiempo;
-    private ListarIncidentesPort listarIncidentes;
-    private ClasificarIncidentePort clasificarIncidente;
-    private CambiarEstadoIncidentePort cambiarEstadoIncidente;
-    private ConsultarEstadisticasIncidentesPort
-            consultarEstadisticas;
-    private ConsultarRiesgoMeteorologicoPort
-            consultarRiesgoMeteorologico;
-    private GeocodificarDireccionPort geocodificarDireccion;
+    private IncidenteUseCase incidenteUseCase;
     private MockMvc mockMvc;
+
     @BeforeEach
     void configurar() {
-        registrarIncidente =
-                mock(RegistrarIncidentePort.class);
-
-        consultarIncidente =
-                mock(ConsultarIncidentePort.class);
-
-        consultarLineaTiempo =
-                mock(ConsultarLineaTiempoPort.class);
-
-        listarIncidentes =
-                mock(ListarIncidentesPort.class);
-
-        consultarEstadisticas =
-                mock(
-                        ConsultarEstadisticasIncidentesPort.class
-                );
-
-        consultarRiesgoMeteorologico =
-                mock(
-                        ConsultarRiesgoMeteorologicoPort.class
-                );
-
-        clasificarIncidente =
-                mock(ClasificarIncidentePort.class);
-
-        cambiarEstadoIncidente =
-                mock(CambiarEstadoIncidentePort.class);
-        geocodificarDireccion =
-                mock(GeocodificarDireccionPort.class);
-
+        incidenteUseCase =
+                mock(IncidenteUseCase.class);
 
         IncidenteController controller =
                 new IncidenteController(
-                        registrarIncidente,
-                        consultarIncidente,
-                        consultarLineaTiempo,
-                        listarIncidentes,
-                        consultarEstadisticas,
-                        consultarRiesgoMeteorologico,
-                        geocodificarDireccion,
-                        clasificarIncidente,
-                        cambiarEstadoIncidente
+                        incidenteUseCase
                 );
 
         mockMvc = MockMvcBuilders
@@ -96,13 +55,14 @@ class IncidenteControllerTest {
                 .build();
     }
 
-
     @Test
     void debeRegistrarIncidenteYResponder201()
             throws Exception {
 
         UUID id = UUID.randomUUID();
-        LocalDateTime fecha = LocalDateTime.now();
+
+        LocalDateTime fecha =
+                LocalDateTime.now();
 
         ResultadoIncidente resultado =
                 new ResultadoIncidente(
@@ -120,8 +80,11 @@ class IncidenteControllerTest {
                         fecha
                 );
 
-        when(registrarIncidente.ejecutar(any()))
-                .thenReturn(resultado);
+        when(
+                incidenteUseCase.registrarIncidente(
+                        any()
+                )
+        ).thenReturn(resultado);
 
         String json = """
                 {
@@ -145,7 +108,9 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isCreated())
+                .andExpect(
+                        status().isCreated()
+                )
                 .andExpect(
                         header().string(
                                 "Location",
@@ -163,6 +128,11 @@ class IncidenteControllerTest {
                 .andExpect(
                         jsonPath("$.tipo")
                                 .value("INUNDACION")
+                );
+
+        verify(incidenteUseCase)
+                .registrarIncidente(
+                        any()
                 );
     }
 
@@ -192,7 +162,9 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isBadRequest())
+                .andExpect(
+                        status().isBadRequest()
+                )
                 .andExpect(
                         jsonPath("$.codigo")
                                 .value("SOLICITUD_INVALIDA")
@@ -211,16 +183,24 @@ class IncidenteControllerTest {
                         ).exists()
                 )
                 .andExpect(
-                        jsonPath("$.erroresValidacion.correoReportante")
-                                .exists()
+                        jsonPath(
+                                "$.erroresValidacion.correoReportante"
+                        ).exists()
                 );
+
+        verifyNoInteractions(
+                incidenteUseCase
+        );
     }
+
     @Test
     void debeConsultarIncidenteYResponder200()
             throws Exception {
 
         UUID id = UUID.randomUUID();
-        LocalDateTime fecha = LocalDateTime.now();
+
+        LocalDateTime fecha =
+                LocalDateTime.now();
 
         ResultadoIncidente resultado =
                 new ResultadoIncidente(
@@ -238,8 +218,11 @@ class IncidenteControllerTest {
                         fecha
                 );
 
-        when(consultarIncidente.ejecutar(id))
-                .thenReturn(resultado);
+        when(
+                incidenteUseCase.consultarIncidente(
+                        id
+                )
+        ).thenReturn(resultado);
 
         mockMvc.perform(
                         get(
@@ -247,7 +230,9 @@ class IncidenteControllerTest {
                                 id
                         )
                 )
-                .andExpect(status().isOk())
+                .andExpect(
+                        status().isOk()
+                )
                 .andExpect(
                         jsonPath("$.id")
                                 .value(id.toString())
@@ -268,17 +253,24 @@ class IncidenteControllerTest {
                         jsonPath("$.cantidadPersonasAfectadas")
                                 .value(15)
                 );
+
+        verify(incidenteUseCase)
+                .consultarIncidente(id);
     }
+
     @Test
     void debeResponder404AlConsultarIncidenteInexistente()
             throws Exception {
 
         UUID id = UUID.randomUUID();
 
-        when(consultarIncidente.ejecutar(id))
-                .thenThrow(
-                        new IncidenteNoEncontradoException(id)
-                );
+        when(
+                incidenteUseCase.consultarIncidente(
+                        id
+                )
+        ).thenThrow(
+                new IncidenteNoEncontradoException(id)
+        );
 
         mockMvc.perform(
                         get(
@@ -286,21 +278,29 @@ class IncidenteControllerTest {
                                 id
                         )
                 )
-                .andExpect(status().isNotFound())
+                .andExpect(
+                        status().isNotFound()
+                )
                 .andExpect(
                         jsonPath("$.estado")
                                 .value(404)
                 )
                 .andExpect(
                         jsonPath("$.codigo")
-                                .value("INCIDENTE_NO_ENCONTRADO")
+                                .value(
+                                        "INCIDENTE_NO_ENCONTRADO"
+                                )
                 )
                 .andExpect(
                         jsonPath("$.ruta")
                                 .value(
-                                        "/api/v1/incidentes/" + id
+                                        "/api/v1/incidentes/"
+                                                + id
                                 )
                 );
+
+        verify(incidenteUseCase)
+                .consultarIncidente(id);
     }
 
     @Test
@@ -318,8 +318,11 @@ class IncidenteControllerTest {
                         EstadoIncidente.CLASIFICADO
                 );
 
-        when(clasificarIncidente.ejecutar(any()))
-                .thenReturn(resultado);
+        when(
+                incidenteUseCase.clasificarIncidente(
+                        any()
+                )
+        ).thenReturn(resultado);
 
         String json = """
                 {
@@ -338,7 +341,9 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isOk())
+                .andExpect(
+                        status().isOk()
+                )
                 .andExpect(
                         jsonPath("$.incidenteId")
                                 .value(id.toString())
@@ -355,6 +360,11 @@ class IncidenteControllerTest {
                         jsonPath("$.estado")
                                 .value("CLASIFICADO")
                 );
+
+        verify(incidenteUseCase)
+                .clasificarIncidente(
+                        any()
+                );
     }
 
     @Test
@@ -363,10 +373,13 @@ class IncidenteControllerTest {
 
         UUID id = UUID.randomUUID();
 
-        when(clasificarIncidente.ejecutar(any()))
-                .thenThrow(
-                        new IncidenteNoEncontradoException(id)
-                );
+        when(
+                incidenteUseCase.clasificarIncidente(
+                        any()
+                )
+        ).thenThrow(
+                new IncidenteNoEncontradoException(id)
+        );
 
         String json = """
                 {
@@ -385,10 +398,14 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isNotFound())
+                .andExpect(
+                        status().isNotFound()
+                )
                 .andExpect(
                         jsonPath("$.codigo")
-                                .value("INCIDENTE_NO_ENCONTRADO")
+                                .value(
+                                        "INCIDENTE_NO_ENCONTRADO"
+                                )
                 )
                 .andExpect(
                         jsonPath("$.estado")
@@ -402,6 +419,11 @@ class IncidenteControllerTest {
                                                 + "/clasificar"
                                 )
                 );
+
+        verify(incidenteUseCase)
+                .clasificarIncidente(
+                        any()
+                );
     }
 
     @Test
@@ -409,7 +431,9 @@ class IncidenteControllerTest {
             throws Exception {
 
         UUID id = UUID.randomUUID();
-        LocalDateTime fecha = LocalDateTime.now();
+
+        LocalDateTime fecha =
+                LocalDateTime.now();
 
         ResultadoIncidente resultado =
                 new ResultadoIncidente(
@@ -427,8 +451,11 @@ class IncidenteControllerTest {
                         fecha
                 );
 
-        when(cambiarEstadoIncidente.ejecutar(any()))
-                .thenReturn(resultado);
+        when(
+                incidenteUseCase.cambiarEstadoIncidente(
+                        any()
+                )
+        ).thenReturn(resultado);
 
         String json = """
                 {
@@ -447,7 +474,9 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isOk())
+                .andExpect(
+                        status().isOk()
+                )
                 .andExpect(
                         jsonPath("$.estado")
                                 .value("VALIDADO")
@@ -455,6 +484,11 @@ class IncidenteControllerTest {
                 .andExpect(
                         jsonPath("$.id")
                                 .value(id.toString())
+                );
+
+        verify(incidenteUseCase)
+                .cambiarEstadoIncidente(
+                        any()
                 );
     }
 
@@ -464,13 +498,16 @@ class IncidenteControllerTest {
 
         UUID id = UUID.randomUUID();
 
-        when(cambiarEstadoIncidente.ejecutar(any()))
-                .thenThrow(
-                        new TransicionEstadoInvalidaException(
-                                EstadoIncidente.REPORTADO,
-                                EstadoIncidente.CERRADO
-                        )
-                );
+        when(
+                incidenteUseCase.cambiarEstadoIncidente(
+                        any()
+                )
+        ).thenThrow(
+                new TransicionEstadoInvalidaException(
+                        EstadoIncidente.REPORTADO,
+                        EstadoIncidente.CERRADO
+                )
+        );
 
         String json = """
                 {
@@ -489,7 +526,9 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isConflict())
+                .andExpect(
+                        status().isConflict()
+                )
                 .andExpect(
                         jsonPath("$.codigo")
                                 .value(
@@ -506,6 +545,11 @@ class IncidenteControllerTest {
                                         "No es posible cambiar el incidente"
                                                 + " de REPORTADO a CERRADO"
                                 )
+                );
+
+        verify(incidenteUseCase)
+                .cambiarEstadoIncidente(
+                        any()
                 );
     }
 
@@ -532,7 +576,9 @@ class IncidenteControllerTest {
                                 )
                                 .content(json)
                 )
-                .andExpect(status().isBadRequest())
+                .andExpect(
+                        status().isBadRequest()
+                )
                 .andExpect(
                         jsonPath("$.codigo")
                                 .value("SOLICITUD_INVALIDA")
@@ -541,13 +587,20 @@ class IncidenteControllerTest {
                         jsonPath("$.erroresValidacion.motivo")
                                 .exists()
                 );
+
+        verifyNoInteractions(
+                incidenteUseCase
+        );
     }
+
     @Test
     void debeConsultarRiesgoMeteorologicoYResponder200()
             throws Exception {
 
         UUID id = UUID.randomUUID();
-        LocalDateTime fecha = LocalDateTime.now();
+
+        LocalDateTime fecha =
+                LocalDateTime.now();
 
         RiesgoMeteorologicoResultado resultado =
                 new RiesgoMeteorologicoResultado(
@@ -567,16 +620,22 @@ class IncidenteControllerTest {
                 );
 
         when(
-                consultarRiesgoMeteorologico.ejecutar(id)
+                incidenteUseCase
+                        .consultarRiesgoMeteorologico(
+                                id
+                        )
         ).thenReturn(resultado);
 
         mockMvc.perform(
                         get(
-                                "/api/v1/incidentes/{id}/riesgo-meteorologico",
+                                "/api/v1/incidentes/"
+                                        + "{id}/riesgo-meteorologico",
                                 id
                         )
                 )
-                .andExpect(status().isOk())
+                .andExpect(
+                        status().isOk()
+                )
                 .andExpect(
                         jsonPath("$.incidenteId")
                                 .value(id.toString())
@@ -597,5 +656,8 @@ class IncidenteControllerTest {
                         jsonPath("$.fuente")
                                 .value("Open-Meteo")
                 );
+
+        verify(incidenteUseCase)
+                .consultarRiesgoMeteorologico(id);
     }
 }

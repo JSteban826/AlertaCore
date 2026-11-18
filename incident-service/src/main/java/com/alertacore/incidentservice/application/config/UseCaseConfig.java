@@ -17,6 +17,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.alertacore.incidentservice.domain.model.gateway
+        .HistorialEstadoGateway;
+
+import com.alertacore.incidentservice.domain.model.gateway
+        .IncidenteGateway;
+
+import com.alertacore.incidentservice.domain.model.gateway
+        .ServicioRecursosGateway;
+
+import com.alertacore.incidentservice.domain.usecase
+        .AsignarRecursoUseCase;
+
 import java.util.List;
 
 @Configuration
@@ -235,6 +247,19 @@ public class UseCaseConfig {
                 meteorologia,
                 geocodificacion,
                 transaccionGateway
+        );
+    }
+
+    @Bean
+    public AsignarRecursoUseCase asignarRecursoUseCase(
+            IncidenteGateway incidenteGateway,
+            HistorialEstadoGateway historialEstadoGateway,
+            ServicioRecursosGateway servicioRecursosGateway
+    ) {
+        return new AsignarRecursoUseCase(
+                incidenteGateway,
+                historialEstadoGateway,
+                servicioRecursosGateway
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.entrypoint.rest.exception;
+package com.alertacore.incidentservice.infrastructure.entry_point.rest.exception;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.entrypoint.rest.exception;
+package com.alertacore.incidentservice.infrastructure.entry_point.rest.exception;
 
 import com.alertacore.incidentservice.domain.exception.DireccionNoEncontradaException;
 import com.alertacore.incidentservice.domain.exception.ServicioGeocodificacionException;

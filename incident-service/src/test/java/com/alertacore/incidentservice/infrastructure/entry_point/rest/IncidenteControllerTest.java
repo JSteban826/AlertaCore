@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
+package com.alertacore.incidentservice.infrastructure.entry_point.rest;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.NivelRiesgo;
@@ -10,7 +10,7 @@ import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.domain.usecase.IncidenteUseCase;
-import com.alertacore.incidentservice.infrastructure.entrypoint.rest.exception.ManejadorGlobalExcepciones;
+import com.alertacore.incidentservice.infrastructure.entry_point.rest.exception.ManejadorGlobalExcepciones;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

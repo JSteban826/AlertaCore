@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.config;
+package com.alertacore.incidentservice.infrastructure.entry_point.rest.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;

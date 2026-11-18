@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.entrypoint.rest.request;
+package com.alertacore.incidentservice.infrastructure.entry_point.rest.request;
 
 import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
 import jakarta.validation.constraints.NotBlank;

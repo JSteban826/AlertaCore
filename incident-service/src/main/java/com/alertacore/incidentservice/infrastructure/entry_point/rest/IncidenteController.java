@@ -1,4 +1,4 @@
-package com.alertacore.incidentservice.infrastructure.entrypoint.rest;
+package com.alertacore.incidentservice.infrastructure.entry_point.rest;
 
 import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
 import com.alertacore.incidentservice.domain.enums.TipoIncidente;
@@ -10,11 +10,11 @@ import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.domain.usecase.IncidenteUseCase;
-import com.alertacore.incidentservice.infrastructure.entrypoint.rest.exception.ErrorResponse;
-import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.CambiarEstadoIncidenteRequest;
-import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.ClasificarIncidenteRequest;
-import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.GeocodificarDireccionRequest;
-import com.alertacore.incidentservice.infrastructure.entrypoint.rest.request.RegistrarIncidenteRequest;
+import com.alertacore.incidentservice.infrastructure.entry_point.rest.exception.ErrorResponse;
+import com.alertacore.incidentservice.infrastructure.entry_point.rest.request.CambiarEstadoIncidenteRequest;
+import com.alertacore.incidentservice.infrastructure.entry_point.rest.request.ClasificarIncidenteRequest;
+import com.alertacore.incidentservice.infrastructure.entry_point.rest.request.GeocodificarDireccionRequest;
+import com.alertacore.incidentservice.infrastructure.entry_point.rest.request.RegistrarIncidenteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

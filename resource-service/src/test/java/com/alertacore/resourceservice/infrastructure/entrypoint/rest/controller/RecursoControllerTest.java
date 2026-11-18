@@ -1,7 +1,7 @@
 package com.alertacore.resourceservice.infrastructure.entrypoint.rest.controller;
 
-import com.alertacore.resourceservice.application.dto.*;
-import com.alertacore.resourceservice.application.port.in.*;
+import com.alertacore.resourceservice.domain.model.dto.*;
+import com.alertacore.resourceservice.domain.usecase.*;
 
 import com.alertacore.resourceservice.domain.enums.EstadoRecurso;
 import com.alertacore.resourceservice.domain.enums.TipoRecurso;
@@ -28,34 +28,34 @@ import static org.mockito.Mockito.when;
 class RecursoControllerTest {
 
     @Mock
-    private RegistrarRecursoPort registrarRecursoPort;
+    private RegistrarRecursoUseCase registrarRecursoUseCase;
 
     @Mock
-    private BuscarRecursoMasCercanoPort buscarRecursoMasCercanoPort;
+    private BuscarRecursoMasCercanoUseCase buscarRecursoMasCercanoUseCase;
 
     @Mock
-    private ReservarRecursoPort reservarRecursoPort;
+    private ReservarRecursoUseCase reservarRecursoUseCase;
 
     @Mock
-    private DespacharRecursoPort despacharRecursoPort;
+    private DespacharRecursoUseCase despacharRecursoUseCase;
 
     @Mock
-    private LiberarRecursoPort liberarRecursoPort;
+    private LiberarRecursoUseCase liberarRecursoUseCase;
 
     @Mock
-    private ActualizarUbicacionRecursoPort actualizarUbicacionRecursoPort;
+    private ActualizarUbicacionRecursoUseCase actualizarUbicacionRecursoUseCase;
 
     @Mock
-    private GenerarReporteUtilizacionPort generarReporteUtilizacionPort;
+    private GenerarReporteUtilizacionUseCase generarReporteUtilizacionUseCase;
 
     @Mock
-    private ConsultarRecursoPort consultarRecursoPort;
+    private ConsultarRecursoUseCase consultarRecursoUseCase;
 
     @Mock
-    private BuscarRecursosDisponiblesPort buscarRecursosDisponiblesPort;
+    private BuscarRecursosDisponiblesUseCase buscarRecursosDisponiblesUseCase;
 
     @Mock
-    private ListarRecursosPort listarRecursosPort;
+    private ListarRecursosUseCase listarRecursosUseCase;
 
     private RecursoController controller;
 
@@ -64,16 +64,16 @@ class RecursoControllerTest {
 
         controller =
                 new RecursoController(
-                        registrarRecursoPort,
-                        buscarRecursoMasCercanoPort,
-                        reservarRecursoPort,
-                        despacharRecursoPort,
-                        liberarRecursoPort,
-                        actualizarUbicacionRecursoPort,
-                        generarReporteUtilizacionPort,
-                        consultarRecursoPort,
-                        buscarRecursosDisponiblesPort,
-                        listarRecursosPort
+                        registrarRecursoUseCase,
+                        consultarRecursoUseCase,
+                        listarRecursosUseCase,
+                        buscarRecursosDisponiblesUseCase,
+                        buscarRecursoMasCercanoUseCase,
+                        reservarRecursoUseCase,
+                        despacharRecursoUseCase,
+                        liberarRecursoUseCase,
+                        actualizarUbicacionRecursoUseCase,
+                        generarReporteUtilizacionUseCase
                 );
     }
 
@@ -82,7 +82,7 @@ class RecursoControllerTest {
 
         UUID id = UUID.randomUUID();
 
-        when(registrarRecursoPort.registrar(any()))
+        when(registrarRecursoUseCase.registrar(any()))
                 .thenReturn(
                         new RecursoDto(
                                 id,
@@ -119,7 +119,7 @@ class RecursoControllerTest {
 
         UUID id = UUID.randomUUID();
 
-        when(consultarRecursoPort.consultar(id))
+        when(consultarRecursoUseCase.consultar(id))
                 .thenReturn(
                         new RecursoDto(
                                 id,
@@ -146,7 +146,7 @@ class RecursoControllerTest {
     @Test
     void deberiaListar() {
 
-        when(listarRecursosPort.listar())
+        when(listarRecursosUseCase.listar())
                 .thenReturn(List.of());
 
         assertNotNull(
@@ -158,7 +158,7 @@ class RecursoControllerTest {
     void deberiaListarDisponibles() {
 
         when(
-                buscarRecursosDisponiblesPort.buscar(
+                buscarRecursosDisponiblesUseCase.buscar(
                         TipoRecurso.AMBULANCIA
                 )
         ).thenReturn(List.of());
@@ -174,7 +174,7 @@ class RecursoControllerTest {
     void deberiaGenerarReporte() {
 
         when(
-                generarReporteUtilizacionPort.generar()
+                generarReporteUtilizacionUseCase.generar()
         ).thenReturn(
                 new ReporteUtilizacionDto(
                         10,
@@ -201,7 +201,7 @@ class RecursoControllerTest {
 
         UUID recursoId = UUID.randomUUID();
 
-        when(buscarRecursoMasCercanoPort.buscar(any()))
+        when(buscarRecursoMasCercanoUseCase.buscar(any()))
                 .thenReturn(
                         new RecursoCercanoDto(
                                 recursoId,
@@ -238,7 +238,7 @@ class RecursoControllerTest {
 
         UUID recursoId = UUID.randomUUID();
 
-        when(reservarRecursoPort.reservar(any()))
+        when(reservarRecursoUseCase.reservar(any()))
                 .thenReturn(
                         new ReservaRecursoDto(
                                 UUID.randomUUID(),
@@ -272,7 +272,7 @@ class RecursoControllerTest {
 
         UUID recursoId = UUID.randomUUID();
 
-        when(despacharRecursoPort.despachar(any()))
+        when(despacharRecursoUseCase.despachar(any()))
                 .thenReturn(
                         new DespachoRecursoDto(
                                 recursoId,
@@ -302,7 +302,7 @@ class RecursoControllerTest {
 
         UUID recursoId = UUID.randomUUID();
 
-        when(liberarRecursoPort.liberar(any()))
+        when(liberarRecursoUseCase.liberar(any()))
                 .thenReturn(
                         new LiberarRecursoDto(
                                 recursoId,
@@ -332,7 +332,7 @@ class RecursoControllerTest {
         UUID recursoId = UUID.randomUUID();
 
         when(
-                actualizarUbicacionRecursoPort.actualizar(
+                actualizarUbicacionRecursoUseCase.actualizar(
                         any()
                 )
         ).thenReturn(

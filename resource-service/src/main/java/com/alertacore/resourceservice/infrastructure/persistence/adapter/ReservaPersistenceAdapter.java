@@ -2,19 +2,22 @@ package com.alertacore.resourceservice.infrastructure.persistence.adapter;
 
 import com.alertacore.resourceservice.domain.enums.EstadoReserva;
 import com.alertacore.resourceservice.domain.model.ReservaRecurso;
-import com.alertacore.resourceservice.domain.port.out.RepositorioReservaRecursoPort;
 import com.alertacore.resourceservice.infrastructure.persistence.mapper.ReservaPersistenceMapper;
 import com.alertacore.resourceservice.infrastructure.persistence.repository.ReservaRecursoJpaRepository;
+
+import com.alertacore.resourceservice.domain.model.gateway.ReservaRecursoGateway;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
 
+
 @Component
 @RequiredArgsConstructor
 public class ReservaPersistenceAdapter
-        implements RepositorioReservaRecursoPort {
+        implements ReservaRecursoGateway {
 
     private final ReservaRecursoJpaRepository repository;
 

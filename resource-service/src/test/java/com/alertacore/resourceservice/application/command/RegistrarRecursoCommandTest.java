@@ -2,6 +2,7 @@ package com.alertacore.resourceservice.application.command;
 
 import com.alertacore.resourceservice.domain.enums.TipoRecurso;
 import com.alertacore.resourceservice.domain.exception.UbicacionInvalidaException;
+import com.alertacore.resourceservice.domain.model.command.RegistrarRecursoCommand;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

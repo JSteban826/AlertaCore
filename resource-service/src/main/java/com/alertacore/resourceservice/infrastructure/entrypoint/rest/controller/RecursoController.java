@@ -1,27 +1,28 @@
 package com.alertacore.resourceservice.infrastructure.entrypoint.rest.controller;
 
-import com.alertacore.resourceservice.application.command.ActualizarUbicacionRecursoCommand;
-import com.alertacore.resourceservice.application.command.BuscarRecursoMasCercanoCommand;
-import com.alertacore.resourceservice.application.command.DespacharRecursoCommand;
-import com.alertacore.resourceservice.application.command.LiberarRecursoCommand;
-import com.alertacore.resourceservice.application.command.RegistrarRecursoCommand;
-import com.alertacore.resourceservice.application.command.ReservarRecursoCommand;
+import com.alertacore.resourceservice.domain.model.command.ActualizarUbicacionRecursoCommand;
+import com.alertacore.resourceservice.domain.model.command.BuscarRecursoMasCercanoCommand;
+import com.alertacore.resourceservice.domain.model.command.DespacharRecursoCommand;
+import com.alertacore.resourceservice.domain.model.command.LiberarRecursoCommand;
+import com.alertacore.resourceservice.domain.model.command.RegistrarRecursoCommand;
+import com.alertacore.resourceservice.domain.model.command.ReservarRecursoCommand;
 
-import com.alertacore.resourceservice.application.dto.RecursoCercanoDto;
-import com.alertacore.resourceservice.application.dto.RecursoDto;
-import com.alertacore.resourceservice.application.dto.ReporteUtilizacionDto;
+import com.alertacore.resourceservice.domain.model.dto.RecursoCercanoDto;
+import com.alertacore.resourceservice.domain.model.dto.RecursoDto;
+import com.alertacore.resourceservice.domain.model.dto.ReporteUtilizacionDto;
 
-import com.alertacore.resourceservice.application.port.in.ActualizarUbicacionRecursoPort;
-import com.alertacore.resourceservice.application.port.in.BuscarRecursoMasCercanoPort;
-import com.alertacore.resourceservice.application.port.in.DespacharRecursoPort;
-import com.alertacore.resourceservice.application.port.in.GenerarReporteUtilizacionPort;
-import com.alertacore.resourceservice.application.port.in.LiberarRecursoPort;
-import com.alertacore.resourceservice.application.port.in.RegistrarRecursoPort;
-import com.alertacore.resourceservice.application.port.in.ReservarRecursoPort;
+//usecase
+import com.alertacore.resourceservice.domain.usecase.ActualizarUbicacionRecursoUseCase;
+import com.alertacore.resourceservice.domain.usecase.BuscarRecursoMasCercanoUseCase;
+import com.alertacore.resourceservice.domain.usecase.DespacharRecursoUseCase;
+import com.alertacore.resourceservice.domain.usecase.GenerarReporteUtilizacionUseCase;
+import com.alertacore.resourceservice.domain.usecase.LiberarRecursoUseCase;
+import com.alertacore.resourceservice.domain.usecase.RegistrarRecursoUseCase;
+import com.alertacore.resourceservice.domain.usecase.ReservarRecursoUseCase;
 
-import com.alertacore.resourceservice.application.port.in.ConsultarRecursoPort;
-import com.alertacore.resourceservice.application.port.in.BuscarRecursosDisponiblesPort;
-import com.alertacore.resourceservice.application.port.in.ListarRecursosPort;
+import com.alertacore.resourceservice.domain.usecase.ConsultarRecursoUseCase;
+import com.alertacore.resourceservice.domain.usecase.BuscarRecursosDisponiblesUseCase;
+import com.alertacore.resourceservice.domain.usecase.ListarRecursosUseCase;
 
 
 import com.alertacore.resourceservice.infrastructure.entrypoint.rest.request.ActualizarUbicacionRequest;
@@ -65,28 +66,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RecursoController {
 
-    private final RegistrarRecursoPort registrarRecursoPort;
+    private final RegistrarRecursoUseCase registrarRecursoUseCase;
 
-    private final BuscarRecursoMasCercanoPort buscarRecursoMasCercanoPort;
+    private final ConsultarRecursoUseCase consultarRecursoUseCase;
 
-    private final ReservarRecursoPort reservarRecursoPort;
+    private final ListarRecursosUseCase listarRecursosUseCase;
 
-    private final DespacharRecursoPort despacharRecursoPort;
+    private final BuscarRecursosDisponiblesUseCase buscarRecursosDisponiblesUseCase;
 
-    private final LiberarRecursoPort liberarRecursoPort;
+    private final BuscarRecursoMasCercanoUseCase buscarRecursoMasCercanoUseCase;
 
-    private final ActualizarUbicacionRecursoPort
-            actualizarUbicacionRecursoPort;
+    private final ReservarRecursoUseCase reservarRecursoUseCase;
 
-    private final GenerarReporteUtilizacionPort
-            generarReporteUtilizacionPort;
+    private final DespacharRecursoUseCase despacharRecursoUseCase;
 
-    private final ConsultarRecursoPort consultarRecursoPort;
+    private final LiberarRecursoUseCase liberarRecursoUseCase;
 
-    private final BuscarRecursosDisponiblesPort
-            buscarRecursosDisponiblesPort;
+    private final ActualizarUbicacionRecursoUseCase actualizarUbicacionRecursoUseCase;
 
-    private final ListarRecursosPort listarRecursosPort;
+    private final GenerarReporteUtilizacionUseCase generarReporteUtilizacionUseCase;
 
     @Operation(
             summary = "Registrar recurso",
@@ -114,7 +112,7 @@ public class RecursoController {
     ) {
 
         RecursoDto dto =
-                registrarRecursoPort.registrar(
+                registrarRecursoUseCase.registrar(
                         new RegistrarRecursoCommand(
                                 request.codigo(),
                                 request.nombre(),
@@ -160,7 +158,7 @@ public class RecursoController {
     ) {
 
         RecursoCercanoDto dto =
-                buscarRecursoMasCercanoPort.buscar(
+                buscarRecursoMasCercanoUseCase.buscar(
                         new BuscarRecursoMasCercanoCommand(
                                 request.incidenteId(),
                                 request.tipoRecurso(),
@@ -210,7 +208,7 @@ public class RecursoController {
     ) {
 
         var dto =
-                reservarRecursoPort.reservar(
+                reservarRecursoUseCase.reservar(
                         new ReservarRecursoCommand(
                                 id,
                                 request.incidenteId(),
@@ -256,7 +254,7 @@ public class RecursoController {
     ) {
 
         var dto =
-                despacharRecursoPort.despachar(
+                despacharRecursoUseCase.despachar(
                         new DespacharRecursoCommand(
                                 id,
                                 request.incidenteId(),
@@ -299,7 +297,7 @@ public class RecursoController {
     ) {
 
         var dto =
-                liberarRecursoPort.liberar(
+                liberarRecursoUseCase.liberar(
                         new LiberarRecursoCommand(
                                 id,
                                 request.incidenteId(),
@@ -341,7 +339,7 @@ public class RecursoController {
     ) {
 
         var dto =
-                actualizarUbicacionRecursoPort.actualizar(
+                actualizarUbicacionRecursoUseCase.actualizar(
                         new ActualizarUbicacionRecursoCommand(
                                 id,
                                 request.latitud(),
@@ -370,7 +368,7 @@ public class RecursoController {
     @GetMapping("/reporte-utilizacion")
     public ReporteUtilizacionDto reporte() {
 
-        return generarReporteUtilizacionPort
+        return generarReporteUtilizacionUseCase
                 .generar();
     }
 
@@ -395,7 +393,7 @@ public class RecursoController {
     ) {
 
         RecursoDto dto =
-                consultarRecursoPort.consultar(id);
+                consultarRecursoUseCase.consultar(id);
 
         return new RecursoResponse(
                 dto.id(),
@@ -422,7 +420,7 @@ public class RecursoController {
             @RequestParam TipoRecurso tipo
     ) {
 
-        return buscarRecursosDisponiblesPort
+        return buscarRecursosDisponiblesUseCase
                 .buscar(tipo)
                 .stream()
                 .map(dto ->
@@ -451,7 +449,7 @@ public class RecursoController {
     @GetMapping
     public List<RecursoResponse> listar() {
 
-        return listarRecursosPort
+        return listarRecursosUseCase
                 .listar()
                 .stream()
                 .map(dto ->

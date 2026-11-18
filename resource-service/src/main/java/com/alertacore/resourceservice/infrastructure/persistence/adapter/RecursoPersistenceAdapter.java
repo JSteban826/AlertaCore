@@ -3,11 +3,13 @@ package com.alertacore.resourceservice.infrastructure.persistence.adapter;
 import com.alertacore.resourceservice.domain.enums.EstadoRecurso;
 import com.alertacore.resourceservice.domain.enums.TipoRecurso;
 import com.alertacore.resourceservice.domain.model.Recurso;
-import com.alertacore.resourceservice.domain.port.out.RepositorioRecursoPort;
+
 
 import com.alertacore.resourceservice.infrastructure.persistence.entity.RecursoEntity;
 import com.alertacore.resourceservice.infrastructure.persistence.mapper.RecursoPersistenceMapper;
 import com.alertacore.resourceservice.infrastructure.persistence.repository.RecursoJpaRepository;
+
+import com.alertacore.resourceservice.domain.model.gateway.RecursoGateway;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class RecursoPersistenceAdapter
-        implements RepositorioRecursoPort {
+        implements RecursoGateway {
 
     private final RecursoJpaRepository repository;
 

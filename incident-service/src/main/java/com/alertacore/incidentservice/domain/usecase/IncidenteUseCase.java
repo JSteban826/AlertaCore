@@ -23,17 +23,14 @@ public final class IncidenteUseCase {
 
     private final ConsultarEstadisticasIncidentesUseCase
             estadisticas;
+    private final ConsultarRiesgoMeteorologicoUseCase meteorologia;
 
-    private final ConsultarRiesgoMeteorologicoUseCase
-            meteorologia;
-
-    private final GeocodificarDireccionUseCase
-            geocodificacion;
+    private final GeocodificarDireccionUseCase geocodificacion;
 
     private final AsignarRecursoUseCase asignarRecurso;
     private final DespacharRecursoUseCase despacharRecurso;
 
-
+    private final LiberarRecursoUseCase liberarRecursoUseCase;
     private final TransaccionGateway transaccionGateway;
 
     public IncidenteUseCase(
@@ -47,6 +44,7 @@ public final class IncidenteUseCase {
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
             GeocodificarDireccionUseCase geocodificacion,
             AsignarRecursoUseCase asignarRecurso,
+            LiberarRecursoUseCase liberarRecursoUseCase,
             DespacharRecursoUseCase despacharRecurso,
             TransaccionGateway transaccionGateway
     ) {   this.registrar = Objects.requireNonNull(
@@ -103,6 +101,11 @@ public final class IncidenteUseCase {
                         despacharRecurso,
                         "El caso de uso de despacho es obligatorio"
                 );
+        this.liberarRecursoUseCase =
+                Objects.requireNonNull(
+                        liberarRecursoUseCase,
+                        "El caso de uso de liberacion es obligatorio"
+                );
 
         this.transaccionGateway = Objects.requireNonNull(
                 transaccionGateway,
@@ -131,6 +134,13 @@ public final class IncidenteUseCase {
     ) {
         return consultar.ejecutar(
                 incidenteId
+        );
+    }
+    public LiberacionRecursoResultado liberarRecurso(
+            LiberarRecursoCommand comando
+    ) {
+        return liberarRecursoUseCase.ejecutar(
+                comando
         );
     }
 

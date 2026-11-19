@@ -227,6 +227,8 @@ public class UseCaseConfig {
             GeocodificarDireccionUseCase geocodificacion,
             AsignarRecursoUseCase asignarRecurso,
             DespacharRecursoUseCase despacharRecursoUseCase,
+            LiberarRecursoUseCase liberarRecursoUseCase,
+
             TransaccionGateway transaccionGateway
     ) {
         return new IncidenteUseCase(
@@ -240,6 +242,7 @@ public class UseCaseConfig {
                 meteorologia,
                 geocodificacion,
                 asignarRecurso,
+                liberarRecursoUseCase,
                 despacharRecursoUseCase,
                 transaccionGateway
         );
@@ -263,6 +266,16 @@ public class UseCaseConfig {
             ServicioRecursosGateway servicioRecursosGateway
     ) {
         return new DespacharRecursoUseCase(
+                incidenteGateway,
+                servicioRecursosGateway
+        );
+    }
+    @Bean
+    public LiberarRecursoUseCase liberarRecursoUseCase(
+            IncidenteGateway incidenteGateway,
+            ServicioRecursosGateway servicioRecursosGateway
+    ) {
+        return new LiberarRecursoUseCase(
                 incidenteGateway,
                 servicioRecursosGateway
         );

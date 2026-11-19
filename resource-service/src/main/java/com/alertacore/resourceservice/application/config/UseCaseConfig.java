@@ -77,13 +77,14 @@ public class UseCaseConfig {
 
     @Bean
     public LiberarRecursoUseCase liberarRecursoUseCase(
-            RecursoGateway recursoGateway
+            RecursoGateway recursoGateway,
+            ReservaRecursoGateway reservaRecursoGateway
     ) {
         return new LiberarRecursoUseCase(
-                recursoGateway
+                recursoGateway,
+                reservaRecursoGateway
         );
     }
-
     @Bean
     public ActualizarUbicacionRecursoUseCase
     actualizarUbicacionRecursoUseCase(

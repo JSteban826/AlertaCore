@@ -5,13 +5,14 @@ import com.alertacore.incidentservice.domain.enums.TipoRecurso;
 import com.alertacore.incidentservice.domain.exception.RecursoDisponibleNoEncontradoException;
 import com.alertacore.incidentservice.domain.exception.RecursoNoDisponibleException;
 import com.alertacore.incidentservice.domain.exception.ServicioRecursosException;
+import com.alertacore.incidentservice.domain.model.DespachoRecurso;
+import com.alertacore.incidentservice.domain.model.LiberacionRecurso;
 import com.alertacore.incidentservice.domain.model.RecursoDisponible;
 import com.alertacore.incidentservice.domain.model.ReservaRecurso;
 import com.alertacore.incidentservice.domain.model.gateway.ServicioRecursosGateway;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import com.alertacore.incidentservice.domain.model.DespachoRecurso;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -257,7 +258,7 @@ public final class ResourceServiceHttpAdapter
     }
 
     @Override
-    public void liberar(
+    public LiberacionRecurso liberar(
             UUID recursoId,
             UUID incidenteId,
             String motivo
@@ -265,6 +266,16 @@ public final class ResourceServiceHttpAdapter
         Objects.requireNonNull(
                 recursoId,
                 "El identificador del recurso es obligatorio"
+        );
+
+        Objects.requireNonNull(
+                incidenteId,
+                "El identificador del incidente es obligatorio"
+        );
+
+        Objects.requireNonNull(
+                motivo,
+                "El motivo de liberacion es obligatorio"
         );
 
         LiberarRecursoRequest request =
@@ -296,7 +307,8 @@ public final class ResourceServiceHttpAdapter
                                     HttpStatusCode::is5xxServerError,
                                     (solicitud, respuesta) -> {
                                         throw new ServicioRecursosException(
-                                                "Resource Service no pudo liberar el recurso"
+                                                "Resource Service no pudo "
+                                                        + "liberar el recurso"
                                         );
                                     }
                             )
@@ -306,17 +318,22 @@ public final class ResourceServiceHttpAdapter
 
             if (response == null) {
                 throw new ServicioRecursosException(
-                        "Resource Service devolvio una respuesta vacia "
-                                + "al liberar el recurso"
+                        "Resource Service devolvio una respuesta "
+                                + "vacia al liberar el recurso"
                 );
             }
+
+            return response.aDominio();
+
         } catch (ServicioRecursosException excepcion) {
             throw excepcion;
+
         } catch (RestClientException excepcion) {
             throw new ServicioRecursosException(
-                    "No fue posible liberar el recurso en Resource Service",
+                    "No fue posible liberar el recurso "
+                            + "en Resource Service",
                     excepcion
             );
         }
     }
-}
+    }

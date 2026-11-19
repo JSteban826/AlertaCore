@@ -19,7 +19,8 @@ import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
 import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
 import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
 import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
-
+import com.alertacore.incidentservice.domain.model.LiberacionRecursoResultado;
+import com.alertacore.incidentservice.domain.model.command.LiberarRecursoCommand;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -42,20 +43,12 @@ class IncidenteUseCaseTest {
     private ClasificarIncidenteUseCase clasificar;
     private ConsultarLineaTiempoUseCase lineaTiempo;
 
-    private ConsultarEstadisticasIncidentesUseCase
-            estadisticas;
-
-    private ConsultarRiesgoMeteorologicoUseCase
-            meteorologia;
-
-    private GeocodificarDireccionUseCase
-            geocodificacion;
-
+    private ConsultarEstadisticasIncidentesUseCase estadisticas;
+    private ConsultarRiesgoMeteorologicoUseCase meteorologia;
+    private GeocodificarDireccionUseCase geocodificacion;
     private AsignarRecursoUseCase asignarRecurso;
-
-    private DespacharRecursoUseCase
-            despacharRecursoUseCase;
-
+    private DespacharRecursoUseCase despacharRecursoUseCase;
+    private  LiberarRecursoUseCase liberarRecursoUseCase;
     private TransaccionGateway transaccionGateway;
     private IncidenteUseCase incidenteUseCase;
 
@@ -115,6 +108,11 @@ class IncidenteUseCaseTest {
                 mock(
                         DespacharRecursoUseCase.class
                 );
+        liberarRecursoUseCase =
+                mock(
+                        LiberarRecursoUseCase.class
+                );
+
 
         transaccionGateway =
                 mock(
@@ -153,6 +151,7 @@ class IncidenteUseCaseTest {
                         meteorologia,
                         geocodificacion,
                         asignarRecurso,
+                        liberarRecursoUseCase,
                         despacharRecursoUseCase,
                         transaccionGateway
                 );
@@ -310,6 +309,41 @@ class IncidenteUseCaseTest {
 
         verify(meteorologia)
                 .ejecutar(incidenteId);
+    }
+    @Test
+    void debeDelegarLiberacionDeRecurso() {
+        LiberarRecursoCommand comando =
+                mock(
+                        LiberarRecursoCommand.class
+                );
+
+        LiberacionRecursoResultado esperado =
+                mock(
+                        LiberacionRecursoResultado.class
+                );
+
+        when(
+                liberarRecursoUseCase.ejecutar(
+                        comando
+                )
+        ).thenReturn(
+                esperado
+        );
+
+        LiberacionRecursoResultado resultado =
+                incidenteUseCase.liberarRecurso(
+                        comando
+                );
+
+        assertSame(
+                esperado,
+                resultado
+        );
+
+        verify(liberarRecursoUseCase)
+                .ejecutar(
+                        comando
+                );
     }
     @Test
     void debeDelegarGeocodificacionDeDireccion() {

@@ -4,7 +4,7 @@ import com.alertacore.incidentservice.domain.enums.TipoRecurso;
 import com.alertacore.incidentservice.domain.model.DespachoRecurso;
 import com.alertacore.incidentservice.domain.model.RecursoDisponible;
 import com.alertacore.incidentservice.domain.model.ReservaRecurso;
-
+import com.alertacore.incidentservice.domain.model.LiberacionRecurso;
 import java.util.UUID;
 
 public interface ServicioRecursosGateway {
@@ -30,7 +30,7 @@ public interface ServicioRecursosGateway {
             String responsable
     );
 
-    void liberar(
+    LiberacionRecurso liberar(
             UUID recursoId,
             UUID incidenteId,
             String motivo

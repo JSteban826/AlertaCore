@@ -1,5 +1,4 @@
-package com.alertacore.incidentservice.infrastructure
-        .entry_points.rest.request;
+package com.alertacore.incidentservice.infrastructure.entry_points.rest.request;
 
 import com.alertacore.incidentservice.domain.model.command
         .LiberarRecursoCommand;

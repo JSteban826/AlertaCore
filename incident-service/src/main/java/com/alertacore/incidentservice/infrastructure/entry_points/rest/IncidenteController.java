@@ -39,6 +39,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.alertacore.incidentservice.domain.model.DespachoRecursoResultado;
 
+import com.alertacore.incidentservice.domain.model.LiberacionRecursoResultado;
+import com.alertacore.incidentservice.domain.model.command.LiberarRecursoCommand;
+import com.alertacore.incidentservice.infrastructure.entry_points.rest.request.LiberarRecursoRequest;
+
 import com.alertacore.incidentservice.infrastructure.entry_points.rest.request.DespacharRecursoRequest;
 
 import java.net.URI;
@@ -843,6 +847,60 @@ public class IncidenteController {
                         .consultarRiesgoMeteorologico(
                                 incidenteId
                         );
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    @PostMapping(
+            "/{incidenteId}/recursos/{recursoId}/liberar"
+    )
+    @Operation(
+            summary = "Liberar un recurso asignado al incidente",
+            description = """
+                Solicita a resource-service la liberacion del recurso.
+                El recurso debe estar DESPACHADO o EN_ATENCION.
+                Al completar la operacion queda DISPONIBLE.
+                """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Recurso liberado correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Solicitud de liberacion invalida"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Incidente o recurso no encontrado"
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "El recurso no puede liberarse en su estado actual"
+            ),
+            @ApiResponse(
+                    responseCode = "503",
+                    description = "Resource Service no se encuentra disponible"
+            )
+    })
+    public ResponseEntity<LiberacionRecursoResultado>
+    liberarRecurso(
+            @PathVariable UUID incidenteId,
+            @PathVariable UUID recursoId,
+            @Valid
+            @RequestBody
+            LiberarRecursoRequest request
+    ) {
+        LiberarRecursoCommand comando =
+                new LiberarRecursoCommand(
+                        incidenteId,
+                        recursoId,
+                        request.motivo()
+                );
+
+        LiberacionRecursoResultado resultado =
+                incidenteUseCase.liberarRecurso(comando);
 
         return ResponseEntity.ok(resultado);
     }

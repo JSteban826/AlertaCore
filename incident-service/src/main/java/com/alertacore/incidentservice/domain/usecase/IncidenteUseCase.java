@@ -139,11 +139,10 @@ public final class IncidenteUseCase {
     public LiberacionRecursoResultado liberarRecurso(
             LiberarRecursoCommand comando
     ) {
-        return liberarRecursoUseCase.ejecutar(
-                comando
+        return transaccionGateway.ejecutar(
+                () -> liberarRecursoUseCase.ejecutar(comando)
         );
     }
-
     public PaginaIncidentesResultado listarIncidentes(
             EstadoIncidente estado,
             TipoIncidente tipo,

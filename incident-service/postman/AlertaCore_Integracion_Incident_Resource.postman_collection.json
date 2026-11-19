@@ -1,0 +1,539 @@
+{
+  "info": {
+    "name": "AlertaCore - Integración Incident Resource",
+    "description": "Flujo E2E: registrar, validar y clasificar un incidente; registrar/reutilizar un recurso; asignar, despachar, liberar y verificar consistencia.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "incidentServiceUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "resourceServiceUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "incidenteId",
+      "value": ""
+    },
+    {
+      "key": "recursoId",
+      "value": ""
+    },
+    {
+      "key": "reservaId",
+      "value": ""
+    },
+    {
+      "key": "tipoIncidente",
+      "value": "INCENDIO"
+    },
+    {
+      "key": "tipoRecurso",
+      "value": "UNIDAD_BOMBEROS"
+    },
+    {
+      "key": "codigoRecurso",
+      "value": "BOM-{{$timestamp}}"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Salud de servicios",
+      "item": [
+        {
+          "name": "Health - incident-service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{incidentServiceUrl}}/actuator/health",
+              "host": [
+                "{{incidentServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('incident-service responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('incident-service está UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Health - resource-service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resourceServiceUrl}}/actuator/health",
+              "host": [
+                "{{resourceServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('resource-service responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('resource-service está UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Registrar incidente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipo\": \"{{tipoIncidente}}\",\n  \"descripcion\": \"Incendio estructural con personas afectadas\",\n  \"latitud\": 4.66,\n  \"longitud\": -74.062,\n  \"direccion\": \"Calle 72 con Carrera 11, Bogota\",\n  \"nombreReportante\": \"Operador de prueba\",\n  \"correoReportante\": \"operador@alertacore.com\",\n  \"telefonoReportante\": \"3001234567\",\n  \"cantidadPersonasAfectadas\": 8,\n  \"hayPersonasHeridas\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Incidente creado', () => pm.response.to.have.status(201));",
+              "const r = pm.response.json();",
+              "pm.collectionVariables.set('incidenteId', r.id);",
+              "pm.test('Estado REPORTADO', () => pm.expect(r.estado).to.eql('REPORTADO'));",
+              "pm.test('Se guardó incidenteId', () => pm.expect(pm.collectionVariables.get('incidenteId')).to.be.ok);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Validar incidente",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nuevoEstado\": \"VALIDADO\",\n  \"motivo\": \"Informacion verificada por el operador\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes/{{incidenteId}}/estado",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes",
+            "{{incidenteId}}",
+            "estado"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Validación responde 200', () => pm.response.to.have.status(200));",
+              "pm.test('Estado VALIDADO', () => pm.expect(pm.response.json().estado).to.eql('VALIDADO'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Clasificar incidente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hayLluviaIntensa\": false,\n  \"accesoDificil\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes/{{incidenteId}}/clasificar",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes",
+            "{{incidenteId}}",
+            "clasificar"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Clasificación responde 200', () => pm.response.to.have.status(200));",
+              "const r = pm.response.json();",
+              "pm.test('Estado CLASIFICADO', () => pm.expect(r.estado).to.eql('CLASIFICADO'));",
+              "pm.test('Incluye nivel de riesgo', () => pm.expect(r.nivelRiesgo).to.be.a('string'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Registrar recurso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigo\": \"{{codigoRecurso}}\",\n  \"nombre\": \"Unidad de Bomberos Central\",\n  \"tipo\": \"{{tipoRecurso}}\",\n  \"latitud\": 4.6600,\n  \"longitud\": -74.0620\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{resourceServiceUrl}}/api/v1/recursos",
+          "host": [
+            "{{resourceServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "recursos"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Recurso creado', () => pm.response.to.have.status(201));",
+              "const r = pm.response.json();",
+              "pm.collectionVariables.set('recursoId', r.id);",
+              "pm.test('Recurso DISPONIBLE', () => pm.expect(r.estado).to.eql('DISPONIBLE'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Asignar recurso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipoRecurso\": \"{{tipoRecurso}}\",\n  \"distanciaMaximaKm\": 30,\n  \"duracionReservaMinutos\": 10\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes/{{incidenteId}}/asignaciones",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes",
+            "{{incidenteId}}",
+            "asignaciones"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Asignación responde 200', () => pm.response.to.have.status(200));",
+              "const r = pm.response.json();",
+              "pm.collectionVariables.set('incidenteId', r.incidenteId);",
+              "pm.collectionVariables.set('recursoId', r.recursoId);",
+              "pm.collectionVariables.set('reservaId', r.reservaId);",
+              "pm.test('Recurso RESERVADO', () => pm.expect(r.estadoRecurso).to.eql('RESERVADO'));",
+              "pm.test('Incidente RECURSO_ASIGNADO', () => pm.expect(r.estadoIncidente).to.eql('RECURSO_ASIGNADO'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Consultar recurso reservado",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{resourceServiceUrl}}/api/v1/recursos/{{recursoId}}",
+          "host": [
+            "{{resourceServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "recursos",
+            "{{recursoId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Consulta responde 200', () => pm.response.to.have.status(200));",
+              "pm.test('Estado RESERVADO', () => pm.expect(pm.response.json().estado).to.eql('RESERVADO'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Despachar recurso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"responsable\": \"OPERADOR_CENTRAL\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes/{{incidenteId}}/recursos/{{recursoId}}/despachar",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes",
+            "{{incidenteId}}",
+            "recursos",
+            "{{recursoId}}",
+            "despachar"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Despacho responde 200', () => pm.response.to.have.status(200));",
+              "const r = pm.response.json();",
+              "pm.test('Recurso DESPACHADO', () => pm.expect(r.estadoRecurso).to.eql('DESPACHADO'));",
+              "pm.test('Incidente mantiene RECURSO_ASIGNADO', () => pm.expect(r.estadoIncidente).to.eql('RECURSO_ASIGNADO'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Liberar recurso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"motivo\": \"Atencion finalizada\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes/{{incidenteId}}/recursos/{{recursoId}}/liberar",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes",
+            "{{incidenteId}}",
+            "recursos",
+            "{{recursoId}}",
+            "liberar"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Liberación responde 200', () => pm.response.to.have.status(200));",
+              "const r = pm.response.json();",
+              "pm.test('Recurso DISPONIBLE', () => pm.expect(r.estadoRecurso).to.eql('DISPONIBLE'));",
+              "pm.test('Incluye fechaLiberacion', () => pm.expect(r.fechaLiberacion).to.be.a('string'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Verificar recurso disponible",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{resourceServiceUrl}}/api/v1/recursos/{{recursoId}}",
+          "host": [
+            "{{resourceServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "recursos",
+            "{{recursoId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Consulta responde 200', () => pm.response.to.have.status(200));",
+              "pm.test('Recurso quedó DISPONIBLE', () => pm.expect(pm.response.json().estado).to.eql('DISPONIBLE'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Consultar línea de tiempo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{incidentServiceUrl}}/api/v1/incidentes/{{incidenteId}}/linea-tiempo",
+          "host": [
+            "{{incidentServiceUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "incidentes",
+            "{{incidenteId}}",
+            "linea-tiempo"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Línea de tiempo responde 200', () => pm.response.to.have.status(200));",
+              "const r = pm.response.json();",
+              "pm.test('Contiene transición RECURSO_ASIGNADO', () => pm.expect(r.some(x => x.nuevoEstado === 'RECURSO_ASIGNADO')).to.eql(true));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

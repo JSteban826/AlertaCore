@@ -2,19 +2,62 @@
   "info": {
     "_postman_id": "a25380c2-505c-4099-a9e2-843dbd5f4200",
     "name": "AlertaCore Resource-Service",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "53368114",
-    "_collection_link": "https://go.postman.co/collection/53368114-a25380c2-505c-4099-a9e2-843dbd5f4200?source=collection_link"
+    "description": "Colección de pruebas directas para resource-service usando variables del Environment AlertaCore Local.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Crear Recursos",
+      "name": "Crear Recurso",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get(\"codigoRecurso\")) {",
+              "    pm.environment.set(\"codigoRecurso\", `AMB-POSTMAN-${Date.now()}`);",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Recurso creado correctamente\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "",
+              "const respuesta = pm.response.json();",
+              "",
+              "pm.test(\"La respuesta contiene recursoId\", function () {",
+              "    pm.expect(respuesta.id).to.exist;",
+              "});",
+              "",
+              "pm.test(\"El recurso inicia DISPONIBLE\", function () {",
+              "    pm.expect(respuesta.estado).to.eql(\"DISPONIBLE\");",
+              "});",
+              "",
+              "if (respuesta.id) {",
+              "    pm.environment.set(\"recursoId\", respuesta.id);",
+              "}"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"codigo\": \"AMB-004\",\r\n  \"nombre\": \"Ambulancia Principal\",\r\n  \"tipo\": \"AMBULANCIA\",\r\n  \"latitud\": 5.6579,\r\n  \"longitud\": -75.0596\r\n}",
+          "raw": "{\n  \"codigo\": \"{{codigoRecurso}}\",\n  \"nombre\": \"Ambulancia Principal\",\n  \"tipo\": \"{{tipoRecurso}}\",\n  \"latitud\": {{latitudRecurso}},\n  \"longitud\": {{longitudRecurso}}\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -22,12 +65,10 @@
           }
         },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
@@ -39,16 +80,27 @@
     },
     {
       "name": "Obtener Recursos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Listado obtenido correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
@@ -59,31 +111,49 @@
       "response": []
     },
     {
-      "name": "Obtener Recurso por Id",
+      "name": "Obtener Recurso por ID",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get(\"recursoId\")) {",
+              "    throw new Error(\"Falta recursoId. Ejecute primero Crear Recurso.\");",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Recurso obtenido correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const respuesta = pm.response.json();",
+              "pm.test(\"El ID coincide con el Environment\", function () {",
+              "    pm.expect(respuesta.id).to.eql(pm.environment.get(\"recursoId\"));",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/1a06e89b-5e1f-4e15-b934-f8019397c7c1",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/{{recursoId}}",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
             "recursos",
-            "1a06e89b-5e1f-4e15-b934-f8019397c7c1"
+            "{{recursoId}}"
           ]
         }
       },
@@ -91,16 +161,27 @@
     },
     {
       "name": "Obtener Recurso por Tipo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consulta por tipo realizada correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/disponibles?tipo=AMBULANCIA",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/disponibles?tipo={{tipoRecurso}}",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
@@ -110,7 +191,7 @@
           "query": [
             {
               "key": "tipo",
-              "value": "AMBULANCIA"
+              "value": "{{tipoRecurso}}"
             }
           ]
         }
@@ -118,13 +199,51 @@
       "response": []
     },
     {
-      "name": "Obtener mas Cercano",
+      "name": "Obtener más Cercano",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get(\"incidenteId\")) {",
+              "    throw new Error(\"Falta incidenteId en el Environment.\");",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Búsqueda realizada correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const respuesta = pm.response.json();",
+              "",
+              "if (respuesta.id) {",
+              "    pm.environment.set(\"recursoId\", respuesta.id);",
+              "} else if (respuesta.recursoId) {",
+              "    pm.environment.set(\"recursoId\", respuesta.recursoId);",
+              "}"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"incidenteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"tipoRecurso\": \"AMBULANCIA\",\r\n  \"latitudIncidente\": 4.6580,\r\n  \"longitudIncidente\": -74.0600,\r\n  \"distanciaMaximaKm\": 30\r\n}",
+          "raw": "{\n  \"incidenteId\": \"{{incidenteId}}\",\n  \"tipoRecurso\": \"{{tipoRecurso}}\",\n  \"latitudIncidente\": {{latitudIncidente}},\n  \"longitudIncidente\": {{longitudIncidente}},\n  \"distanciaMaximaKm\": {{distanciaMaximaKm}}\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -132,12 +251,10 @@
           }
         },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/buscar-mas-cercano",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/buscar-mas-cercano",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
@@ -150,17 +267,70 @@
     },
     {
       "name": "Reservar Recurso",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get(\"recursoId\")) {",
+              "    throw new Error(\"Falta recursoId. Ejecute primero Crear Recurso.\");",
+              "}",
+              "",
+              "if (!pm.environment.get(\"incidenteId\")) {",
+              "    throw new Error(\"Falta incidenteId en el Environment.\");",
+              "}",
+              "",
+              "if (!pm.environment.get(\"idempotencyKey\")) {",
+              "    const uuid = pm.variables.replaceIn(\"{{$randomUUID}}\");",
+              "    pm.environment.set(\"idempotencyKey\", `POSTMAN-${uuid}`);",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Reserva procesada correctamente\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "",
+              "const respuesta = pm.response.json();",
+              "",
+              "if (respuesta.id) {",
+              "    pm.environment.set(\"reservaId\", respuesta.id);",
+              "} else if (respuesta.reservaId) {",
+              "    pm.environment.set(\"reservaId\", respuesta.reservaId);",
+              "}",
+              "",
+              "if (respuesta.estado) {",
+              "    pm.test(\"La reserva queda ACTIVA\", function () {",
+              "        pm.expect(respuesta.estado).to.eql(\"ACTIVA\");",
+              "    });",
+              "}"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
           {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
             "key": "Idempotency-Key",
-            "value": "TEST-001"
+            "value": "{{idempotencyKey}}",
+            "type": "text"
           }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"incidenteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"duracionReservaMinutos\": 10\r\n}",
+          "raw": "{\n  \"incidenteId\": \"{{incidenteId}}\",\n  \"duracionReservaMinutos\": {{duracionReservaMinutos}}\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -168,17 +338,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/6036d385-3d2b-430c-987c-217a257fbe41/reservar",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/{{recursoId}}/reservar",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
             "recursos",
-            "6036d385-3d2b-430c-987c-217a257fbe41",
+            "{{recursoId}}",
             "reservar"
           ]
         }
@@ -187,12 +355,47 @@
     },
     {
       "name": "Despachar Recurso",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get(\"recursoId\") || !pm.environment.get(\"incidenteId\")) {",
+              "    throw new Error(\"Faltan recursoId o incidenteId en el Environment.\");",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Despacho realizado correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const respuesta = pm.response.json();",
+              "pm.test(\"El recurso queda DESPACHADO\", function () {",
+              "    pm.expect(respuesta.estado).to.eql(\"DESPACHADO\");",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"incidenteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"responsable\": \"OPERADOR-001\"\r\n}",
+          "raw": "{\n  \"incidenteId\": \"{{incidenteId}}\",\n  \"responsable\": \"{{responsable}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -200,17 +403,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/6036d385-3d2b-430c-987c-217a257fbe41/despachar",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/{{recursoId}}/despachar",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
             "recursos",
-            "6036d385-3d2b-430c-987c-217a257fbe41",
+            "{{recursoId}}",
             "despachar"
           ]
         }
@@ -219,12 +420,49 @@
     },
     {
       "name": "Liberar Recurso",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.environment.get(\"recursoId\") || !pm.environment.get(\"incidenteId\")) {",
+              "    throw new Error(\"Faltan recursoId o incidenteId en el Environment.\");",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Liberación realizada correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const respuesta = pm.response.json();",
+              "pm.test(\"El recurso queda DISPONIBLE\", function () {",
+              "    pm.expect(respuesta.estado).to.eql(\"DISPONIBLE\");",
+              "});",
+              "",
+              "pm.environment.unset(\"idempotencyKey\");"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"incidenteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"motivo\": \"Atencion finalizada\"\r\n}",
+          "raw": "{\n  \"incidenteId\": \"{{incidenteId}}\",\n  \"motivo\": \"{{motivoLiberacion}}\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -232,17 +470,15 @@
           }
         },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/6036d385-3d2b-430c-987c-217a257fbe41/liberar",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/{{recursoId}}/liberar",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",
             "recursos",
-            "6036d385-3d2b-430c-987c-217a257fbe41",
+            "{{recursoId}}",
             "liberar"
           ]
         }
@@ -251,25 +487,27 @@
     },
     {
       "name": "Reporte Utilización",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Reporte obtenido correctamente\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
         "url": {
-          "raw": "http://localhost:8082/api/v1/recursos/reporte-utilizacion",
-          "protocol": "http",
+          "raw": "{{resourceBaseUrl}}/api/v1/recursos/reporte-utilizacion",
           "host": [
-            "localhost"
+            "{{resourceBaseUrl}}"
           ],
-          "port": "8082",
           "path": [
             "api",
             "v1",

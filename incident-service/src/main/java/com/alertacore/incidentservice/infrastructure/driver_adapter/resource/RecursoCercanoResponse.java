@@ -1,5 +1,4 @@
-package com.alertacore.incidentservice.infrastructure
-        .driver_adapter.resource.dto;
+package com.alertacore.incidentservice.infrastructure.driver_adapter.resource;
 
 import com.alertacore.incidentservice.domain.enums.EstadoRecurso;
 import com.alertacore.incidentservice.domain.enums.TipoRecurso;

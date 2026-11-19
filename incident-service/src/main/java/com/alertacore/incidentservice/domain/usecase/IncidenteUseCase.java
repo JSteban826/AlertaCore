@@ -31,6 +31,8 @@ public final class IncidenteUseCase {
             geocodificacion;
 
     private final AsignarRecursoUseCase asignarRecurso;
+    private final DespacharRecursoUseCase despacharRecurso;
+
 
     private final TransaccionGateway transaccionGateway;
 
@@ -45,9 +47,9 @@ public final class IncidenteUseCase {
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
             GeocodificarDireccionUseCase geocodificacion,
             AsignarRecursoUseCase asignarRecurso,
+            DespacharRecursoUseCase despacharRecurso,
             TransaccionGateway transaccionGateway
-    ) {
-        this.registrar = Objects.requireNonNull(
+    ) {   this.registrar = Objects.requireNonNull(
                 registrar,
                 "El caso de uso de registro es obligatorio"
         );
@@ -96,6 +98,11 @@ public final class IncidenteUseCase {
                         asignarRecurso,
                         "El caso de uso de asignacion es obligatorio"
                 );
+        this.despacharRecurso =
+                Objects.requireNonNull(
+                        despacharRecurso,
+                        "El caso de uso de despacho es obligatorio"
+                );
 
         this.transaccionGateway = Objects.requireNonNull(
                 transaccionGateway,
@@ -108,6 +115,13 @@ public final class IncidenteUseCase {
     ) {
         return registrar.ejecutar(
                 comando
+        );
+    }
+    public DespachoRecursoResultado despacharRecurso(
+            DespacharRecursoCommand comando
+    ) {
+        return transaccionGateway.ejecutar(
+                () -> despacharRecurso.ejecutar(comando)
         );
     }
 

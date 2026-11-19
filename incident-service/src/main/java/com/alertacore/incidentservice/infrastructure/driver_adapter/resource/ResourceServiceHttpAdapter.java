@@ -8,15 +8,10 @@ import com.alertacore.incidentservice.domain.exception.ServicioRecursosException
 import com.alertacore.incidentservice.domain.model.RecursoDisponible;
 import com.alertacore.incidentservice.domain.model.ReservaRecurso;
 import com.alertacore.incidentservice.domain.model.gateway.ServicioRecursosGateway;
-import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto.BuscarRecursoMasCercanoRequest;
-import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto.LiberarRecursoRequest;
-import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto.LiberarRecursoResponse;
-import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto.RecursoCercanoResponse;
-import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto.ReservaRecursoResponse;
-import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto.ReservarRecursoRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import com.alertacore.incidentservice.domain.model.DespachoRecurso;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -98,6 +93,86 @@ public final class ResourceServiceHttpAdapter
         } catch (RestClientException excepcion) {
             throw new ServicioRecursosException(
                     "No fue posible comunicarse con Resource Service",
+                    excepcion
+            );
+        }
+    }
+    @Override
+    public DespachoRecurso despachar(
+            UUID recursoId,
+            UUID incidenteId,
+            String responsable
+    ) {
+        Objects.requireNonNull(
+                recursoId,
+                "El identificador del recurso es obligatorio"
+        );
+
+        Objects.requireNonNull(
+                incidenteId,
+                "El identificador del incidente es obligatorio"
+        );
+
+        Objects.requireNonNull(
+                responsable,
+                "El responsable es obligatorio"
+        );
+
+        DespacharRecursoRequest request =
+                new DespacharRecursoRequest(
+                        incidenteId,
+                        responsable
+                );
+
+        try {
+            DespachoRecursoResponse response =
+                    restClient.post()
+                            .uri(
+                                    "/api/v1/recursos/{id}/despachar",
+                                    recursoId
+                            )
+                            .body(request)
+                            .retrieve()
+                            .onStatus(
+                                    estado -> estado.value() == 409,
+                                    (solicitud, respuesta) -> {
+                                        throw new RecursoNoDisponibleException(
+                                                recursoId
+                                        );
+                                    }
+                            )
+                            .onStatus(
+                                    HttpStatusCode::is5xxServerError,
+                                    (solicitud, respuesta) -> {
+                                        throw new ServicioRecursosException(
+                                                "Resource Service no pudo "
+                                                        + "despachar el recurso"
+                                        );
+                                    }
+                            )
+                            .body(
+                                    DespachoRecursoResponse.class
+                            );
+
+            if (response == null) {
+                throw new ServicioRecursosException(
+                        "Resource Service devolvio una respuesta "
+                                + "vacia al despachar el recurso"
+                );
+            }
+
+            return response.aDominio();
+
+        } catch (
+                RecursoNoDisponibleException
+                | ServicioRecursosException excepcion
+        ) {
+            throw excepcion;
+
+        } catch (RestClientException excepcion) {
+            throw new ServicioRecursosException(
+                    "No fue posible despachar el recurso "
+                            + "en Resource Service",
                     excepcion
             );
         }

@@ -1,10 +1,10 @@
-package com.alertacore.incidentservice.infrastructure
-        .driver_adapter.resource.dto;
+package com.alertacore.incidentservice.infrastructure.driver_adapter.resource.dto;
 
 import com.alertacore.incidentservice.domain.enums.EstadoRecurso;
 import com.alertacore.incidentservice.domain.enums.TipoRecurso;
 import com.alertacore.incidentservice.domain.model.RecursoDisponible;
 import com.alertacore.incidentservice.domain.model.ReservaRecurso;
+import com.alertacore.incidentservice.infrastructure.driver_adapter.resource.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

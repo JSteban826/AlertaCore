@@ -16,7 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
+import com.alertacore.incidentservice.domain.model.DespachoRecursoResultado;
+import com.alertacore.incidentservice.domain.model.command.DespacharRecursoCommand;
 import java.util.List;
 
 @Configuration
@@ -212,6 +213,7 @@ public class UseCaseConfig {
         );
     }
 
+
     @Bean
     public IncidenteUseCase incidenteUseCase(
             RegistrarIncidenteUseCase registrar,
@@ -224,6 +226,7 @@ public class UseCaseConfig {
             ConsultarRiesgoMeteorologicoUseCase meteorologia,
             GeocodificarDireccionUseCase geocodificacion,
             AsignarRecursoUseCase asignarRecurso,
+            DespacharRecursoUseCase despacharRecursoUseCase,
             TransaccionGateway transaccionGateway
     ) {
         return new IncidenteUseCase(
@@ -237,6 +240,7 @@ public class UseCaseConfig {
                 meteorologia,
                 geocodificacion,
                 asignarRecurso,
+                despacharRecursoUseCase,
                 transaccionGateway
         );
     }
@@ -250,6 +254,16 @@ public class UseCaseConfig {
         return new AsignarRecursoUseCase(
                 incidenteGateway,
                 historialEstadoGateway,
+                servicioRecursosGateway
+        );
+    }
+    @Bean
+    public DespacharRecursoUseCase despacharRecursoUseCase(
+            IncidenteGateway incidenteGateway,
+            ServicioRecursosGateway servicioRecursosGateway
+    ) {
+        return new DespacharRecursoUseCase(
+                incidenteGateway,
                 servicioRecursosGateway
         );
     }

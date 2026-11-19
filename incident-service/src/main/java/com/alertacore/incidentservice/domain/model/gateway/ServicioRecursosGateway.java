@@ -1,6 +1,7 @@
 package com.alertacore.incidentservice.domain.model.gateway;
 
 import com.alertacore.incidentservice.domain.enums.TipoRecurso;
+import com.alertacore.incidentservice.domain.model.DespachoRecurso;
 import com.alertacore.incidentservice.domain.model.RecursoDisponible;
 import com.alertacore.incidentservice.domain.model.ReservaRecurso;
 
@@ -21,6 +22,12 @@ public interface ServicioRecursosGateway {
             UUID incidenteId,
             int duracionReservaMinutos,
             String idempotencyKey
+    );
+
+    DespachoRecurso despachar(
+            UUID recursoId,
+            UUID incidenteId,
+            String responsable
     );
 
     void liberar(

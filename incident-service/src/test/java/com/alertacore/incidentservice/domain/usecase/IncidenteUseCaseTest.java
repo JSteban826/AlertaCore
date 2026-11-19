@@ -1,13 +1,26 @@
 package com.alertacore.incidentservice.domain.usecase;
 
 import com.alertacore.incidentservice.domain.model.AsignacionRecursoResultado;
+import com.alertacore.incidentservice.domain.model.DespachoRecursoResultado;
 import com.alertacore.incidentservice.domain.model.ResultadoClasificacion;
 import com.alertacore.incidentservice.domain.model.ResultadoIncidente;
 import com.alertacore.incidentservice.domain.model.command.AsignarRecursoCommand;
 import com.alertacore.incidentservice.domain.model.command.CambiarEstadoIncidenteCommand;
 import com.alertacore.incidentservice.domain.model.command.ClasificarIncidenteCommand;
+import com.alertacore.incidentservice.domain.model.command.DespacharRecursoCommand;
 import com.alertacore.incidentservice.domain.model.gateway.TransaccionGateway;
 import org.junit.jupiter.api.BeforeEach;
+import com.alertacore.incidentservice.domain.enums.EstadoIncidente;
+import com.alertacore.incidentservice.domain.enums.TipoIncidente;
+import com.alertacore.incidentservice.domain.model.EstadisticasIncidentesResultado;
+import com.alertacore.incidentservice.domain.model.GeocodificacionResultado;
+import com.alertacore.incidentservice.domain.model.PaginaIncidentesResultado;
+import com.alertacore.incidentservice.domain.model.RegistroLineaTiempoResultado;
+import com.alertacore.incidentservice.domain.model.RiesgoMeteorologicoResultado;
+import com.alertacore.incidentservice.domain.model.command.GeocodificarDireccionCommand;
+import com.alertacore.incidentservice.domain.model.command.RegistrarIncidenteCommand;
+
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -28,32 +41,55 @@ class IncidenteUseCaseTest {
     private CambiarEstadoIncidenteUseCase cambiarEstado;
     private ClasificarIncidenteUseCase clasificar;
     private ConsultarLineaTiempoUseCase lineaTiempo;
-    private ConsultarEstadisticasIncidentesUseCase estadisticas;
-    private ConsultarRiesgoMeteorologicoUseCase meteorologia;
-    private GeocodificarDireccionUseCase geocodificacion;
+
+    private ConsultarEstadisticasIncidentesUseCase
+            estadisticas;
+
+    private ConsultarRiesgoMeteorologicoUseCase
+            meteorologia;
+
+    private GeocodificarDireccionUseCase
+            geocodificacion;
+
     private AsignarRecursoUseCase asignarRecurso;
+
+    private DespacharRecursoUseCase
+            despacharRecursoUseCase;
+
     private TransaccionGateway transaccionGateway;
     private IncidenteUseCase incidenteUseCase;
 
     @BeforeEach
     void configurar() {
         registrar =
-                mock(RegistrarIncidenteUseCase.class);
+                mock(
+                        RegistrarIncidenteUseCase.class
+                );
 
         consultar =
-                mock(ConsultarIncidenteUseCase.class);
+                mock(
+                        ConsultarIncidenteUseCase.class
+                );
 
         listar =
-                mock(ListarIncidentesUseCase.class);
+                mock(
+                        ListarIncidentesUseCase.class
+                );
 
         cambiarEstado =
-                mock(CambiarEstadoIncidenteUseCase.class);
+                mock(
+                        CambiarEstadoIncidenteUseCase.class
+                );
 
         clasificar =
-                mock(ClasificarIncidenteUseCase.class);
+                mock(
+                        ClasificarIncidenteUseCase.class
+                );
 
         lineaTiempo =
-                mock(ConsultarLineaTiempoUseCase.class);
+                mock(
+                        ConsultarLineaTiempoUseCase.class
+                );
 
         estadisticas =
                 mock(
@@ -70,20 +106,27 @@ class IncidenteUseCaseTest {
                         GeocodificarDireccionUseCase.class
                 );
 
-        transaccionGateway =
-                mock(TransaccionGateway.class);
         asignarRecurso =
                 mock(
                         AsignarRecursoUseCase.class
                 );
 
+        despacharRecursoUseCase =
+                mock(
+                        DespacharRecursoUseCase.class
+                );
+
+        transaccionGateway =
+                mock(
+                        TransaccionGateway.class
+                );
+
         /*
          * El gateway simulado ejecuta inmediatamente
-         * la operación recibida.
+         * el Supplier recibido.
          *
-         * Esto permite probar que IncidenteUseCase
-         * envuelve correctamente las operaciones de
-         * cambio de estado y clasificación.
+         * Sin esta configuración, Mockito devolvería null
+         * porque TransaccionGateway es un mock.
          */
         doAnswer(
                 invocacion -> {
@@ -110,17 +153,20 @@ class IncidenteUseCaseTest {
                         meteorologia,
                         geocodificacion,
                         asignarRecurso,
+                        despacharRecursoUseCase,
                         transaccionGateway
                 );
     }
 
-
     @Test
     void debeDelegarLaConsultaDelIncidente() {
-        UUID incidenteId = UUID.randomUUID();
+        UUID incidenteId =
+                UUID.randomUUID();
 
         ResultadoIncidente esperado =
-                mock(ResultadoIncidente.class);
+                mock(
+                        ResultadoIncidente.class
+                );
 
         when(
                 consultar.ejecutar(
@@ -145,6 +191,152 @@ class IncidenteUseCaseTest {
                         incidenteId
                 );
     }
+    @Test
+    void debeDelegarRegistroDeIncidente() {
+        RegistrarIncidenteCommand comando =
+                mock(RegistrarIncidenteCommand.class);
+
+        ResultadoIncidente esperado =
+                mock(ResultadoIncidente.class);
+
+        when(
+                registrar.ejecutar(comando)
+        ).thenReturn(esperado);
+
+        ResultadoIncidente resultado =
+                incidenteUseCase.registrarIncidente(comando);
+
+        assertSame(esperado, resultado);
+
+        verify(registrar)
+                .ejecutar(comando);
+    }
+    @Test
+    void debeDelegarListadoDeIncidentes() {
+        PaginaIncidentesResultado esperado =
+                mock(PaginaIncidentesResultado.class);
+
+        when(
+                listar.ejecutar(
+                        EstadoIncidente.CLASIFICADO,
+                        TipoIncidente.INUNDACION,
+                        0,
+                        20
+                )
+        ).thenReturn(esperado);
+
+        PaginaIncidentesResultado resultado =
+                incidenteUseCase.listarIncidentes(
+                        EstadoIncidente.CLASIFICADO,
+                        TipoIncidente.INUNDACION,
+                        0,
+                        20
+                );
+
+        assertSame(esperado, resultado);
+
+        verify(listar)
+                .ejecutar(
+                        EstadoIncidente.CLASIFICADO,
+                        TipoIncidente.INUNDACION,
+                        0,
+                        20
+                );
+    }
+    @Test
+    void debeDelegarConsultaDeLineaDeTiempo() {
+        UUID incidenteId = UUID.randomUUID();
+
+        List<RegistroLineaTiempoResultado> esperado =
+                List.of(
+                        mock(
+                                RegistroLineaTiempoResultado.class
+                        )
+                );
+
+        when(
+                lineaTiempo.ejecutar(incidenteId)
+        ).thenReturn(esperado);
+
+        List<RegistroLineaTiempoResultado> resultado =
+                incidenteUseCase.consultarLineaTiempo(
+                        incidenteId
+                );
+
+        assertSame(esperado, resultado);
+
+        verify(lineaTiempo)
+                .ejecutar(incidenteId);
+    }
+    @Test
+    void debeDelegarConsultaDeEstadisticas() {
+        EstadisticasIncidentesResultado esperado =
+                mock(
+                        EstadisticasIncidentesResultado.class
+                );
+
+        when(
+                estadisticas.ejecutar()
+        ).thenReturn(esperado);
+
+        EstadisticasIncidentesResultado resultado =
+                incidenteUseCase.consultarEstadisticas();
+
+        assertSame(esperado, resultado);
+
+        verify(estadisticas)
+                .ejecutar();
+    }
+    @Test
+    void debeDelegarConsultaDeRiesgoMeteorologico() {
+        UUID incidenteId = UUID.randomUUID();
+
+        RiesgoMeteorologicoResultado esperado =
+                mock(
+                        RiesgoMeteorologicoResultado.class
+                );
+
+        when(
+                meteorologia.ejecutar(incidenteId)
+        ).thenReturn(esperado);
+
+        RiesgoMeteorologicoResultado resultado =
+                incidenteUseCase
+                        .consultarRiesgoMeteorologico(
+                                incidenteId
+                        );
+
+        assertSame(esperado, resultado);
+
+        verify(meteorologia)
+                .ejecutar(incidenteId);
+    }
+    @Test
+    void debeDelegarGeocodificacionDeDireccion() {
+        GeocodificarDireccionCommand comando =
+                mock(
+                        GeocodificarDireccionCommand.class
+                );
+
+        GeocodificacionResultado esperado =
+                mock(
+                        GeocodificacionResultado.class
+                );
+
+        when(
+                geocodificacion.ejecutar(comando)
+        ).thenReturn(esperado);
+
+        GeocodificacionResultado resultado =
+                incidenteUseCase.geocodificarDireccion(
+                        comando
+                );
+
+        assertSame(esperado, resultado);
+
+        verify(geocodificacion)
+                .ejecutar(comando);
+    }
 
     @Test
     void debeEjecutarCambioDeEstadoDentroDeTransaccion() {
@@ -154,7 +346,9 @@ class IncidenteUseCaseTest {
                 );
 
         ResultadoIncidente esperado =
-                mock(ResultadoIncidente.class);
+                mock(
+                        ResultadoIncidente.class
+                );
 
         when(
                 cambiarEstado.ejecutar(
@@ -194,7 +388,9 @@ class IncidenteUseCaseTest {
                 );
 
         ResultadoClasificacion esperado =
-                mock(ResultadoClasificacion.class);
+                mock(
+                        ResultadoClasificacion.class
+                );
 
         when(
                 clasificar.ejecutar(
@@ -261,6 +457,47 @@ class IncidenteUseCaseTest {
                 );
 
         verify(asignarRecurso)
+                .ejecutar(
+                        comando
+                );
+    }
+
+    @Test
+    void debeEjecutarDespachoDentroDeTransaccion() {
+        DespacharRecursoCommand comando =
+                mock(
+                        DespacharRecursoCommand.class
+                );
+
+        DespachoRecursoResultado esperado =
+                mock(
+                        DespachoRecursoResultado.class
+                );
+
+        when(
+                despacharRecursoUseCase.ejecutar(
+                        comando
+                )
+        ).thenReturn(
+                esperado
+        );
+
+        DespachoRecursoResultado resultado =
+                incidenteUseCase.despacharRecurso(
+                        comando
+                );
+
+        assertSame(
+                esperado,
+                resultado
+        );
+
+        verify(transaccionGateway)
+                .ejecutar(
+                        any()
+                );
+
+        verify(despacharRecursoUseCase)
                 .ejecutar(
                         comando
                 );

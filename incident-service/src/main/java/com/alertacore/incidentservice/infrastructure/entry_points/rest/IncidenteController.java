@@ -37,6 +37,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.alertacore.incidentservice.domain.model.DespachoRecursoResultado;
+
+import com.alertacore.incidentservice.infrastructure.entry_points.rest.request.DespacharRecursoRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -140,6 +143,35 @@ public class IncidenteController {
                     )
             )
     })
+    @PostMapping(
+            "/{incidenteId}/recursos/{recursoId}/despachar"
+    )
+    public ResponseEntity<DespachoRecursoResultado>
+    despacharRecurso(
+            @PathVariable
+            UUID incidenteId,
+
+            @PathVariable
+            UUID recursoId,
+
+            @Valid
+            @RequestBody
+            DespacharRecursoRequest request
+    ) {
+
+        DespachoRecursoResultado resultado =
+                incidenteUseCase.despacharRecurso(
+                        request.aComando(
+                                incidenteId,
+                                recursoId
+                        )
+                );
+
+        return ResponseEntity.ok(
+                resultado
+        );
+    }
+
     @PostMapping("/{incidenteId}/asignaciones")
     public ResponseEntity<AsignacionRecursoResultado>
     asignarRecurso(

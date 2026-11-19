@@ -16,6 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.alertacore.incidentservice.domain.enums.EstadoRecurso;
+import com.alertacore.incidentservice.domain.model.DespachoRecursoResultado;
+
+import java.time.LocalDateTime;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -53,6 +57,132 @@ class IncidenteControllerTest {
                         new ManejadorGlobalExcepciones()
                 )
                 .build();
+    }
+    @Test
+    void debeDespacharRecursoYResponder200()
+            throws Exception {
+
+        UUID incidenteId =
+                UUID.randomUUID();
+
+        UUID recursoId =
+                UUID.randomUUID();
+
+        LocalDateTime fechaDespacho =
+                LocalDateTime.of(
+                        2026,
+                        11,
+                        18,
+                        19,
+                        0
+                );
+
+        DespachoRecursoResultado resultado =
+                new DespachoRecursoResultado(
+                        incidenteId,
+                        recursoId,
+                        EstadoRecurso.DESPACHADO,
+                        EstadoIncidente.RECURSO_ASIGNADO,
+                        fechaDespacho
+                );
+
+        when(
+                incidenteUseCase.despacharRecurso(
+                        any()
+                )
+        ).thenReturn(
+                resultado
+        );
+
+        String json = """
+            {
+              "responsable": "OPERADOR_CENTRAL"
+            }
+            """;
+
+        mockMvc.perform(
+                        post(
+                                "/api/v1/incidentes/{incidenteId}"
+                                        + "/recursos/{recursoId}"
+                                        + "/despachar",
+                                incidenteId,
+                                recursoId
+                        )
+                                .contentType(
+                                        MediaType.APPLICATION_JSON
+                                )
+                                .content(json)
+                )
+                .andExpect(
+                        status().isOk()
+                )
+                .andExpect(
+                        jsonPath("$.incidenteId")
+                                .value(
+                                        incidenteId.toString()
+                                )
+                )
+                .andExpect(
+                        jsonPath("$.recursoId")
+                                .value(
+                                        recursoId.toString()
+                                )
+                )
+                .andExpect(
+                        jsonPath("$.estadoRecurso")
+                                .value("DESPACHADO")
+                )
+                .andExpect(
+                        jsonPath("$.estadoIncidente")
+                                .value("RECURSO_ASIGNADO")
+                );
+
+        verify(incidenteUseCase)
+                .despacharRecurso(
+                        any()
+                );
+    }
+    @Test
+    void debeResponder400CuandoResponsableEstaVacio()
+            throws Exception {
+
+        UUID incidenteId =
+                UUID.randomUUID();
+
+        UUID recursoId =
+                UUID.randomUUID();
+
+        String json = """
+            {
+              "responsable": ""
+            }
+            """;
+
+        mockMvc.perform(
+                        post(
+                                "/api/v1/incidentes/{incidenteId}"
+                                        + "/recursos/{recursoId}"
+                                        + "/despachar",
+                                incidenteId,
+                                recursoId
+                        )
+                                .contentType(
+                                        MediaType.APPLICATION_JSON
+                                )
+                                .content(json)
+                )
+                .andExpect(
+                        status().isBadRequest()
+                )
+                .andExpect(
+                        jsonPath("$.codigo")
+                                .value("SOLICITUD_INVALIDA")
+                )
+                .andExpect(
+                        jsonPath(
+                                "$.erroresValidacion.responsable"
+                        ).exists()
+                );
     }
 
     @Test

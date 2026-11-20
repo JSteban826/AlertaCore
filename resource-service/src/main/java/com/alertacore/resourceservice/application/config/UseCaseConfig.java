@@ -10,7 +10,15 @@ import com.alertacore.resourceservice.domain.usecase.ReservarRecursoUseCase;
 import com.alertacore.resourceservice.domain.usecase.ConsultarRecursoUseCase;
 import com.alertacore.resourceservice.domain.usecase.BuscarRecursosDisponiblesUseCase;
 import com.alertacore.resourceservice.domain.usecase.ListarRecursosUseCase;
-
+import com.alertacore.resourceservice.domain.model.command.DespacharRecursoCommand;
+import com.alertacore.resourceservice.domain.model.dto.DespachoRecursoDto;
+import com.alertacore.resourceservice.domain.model.gateway.NotificacionDespachoGateway;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.client.RestClientException;
 import com.alertacore.resourceservice.domain.service.CalculadorDistanciaHaversine;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,12 +75,45 @@ public class UseCaseConfig {
     @Bean
     public DespacharRecursoUseCase despacharRecursoUseCase(
             RecursoGateway recursoGateway,
-            DespachoRecursoGateway despachoRecursoGateway
+            DespachoRecursoGateway despachoRecursoGateway,
+            NotificacionDespachoGateway notificacionDespachoGateway,
+            PlatformTransactionManager transactionManager
     ) {
-        return new DespacharRecursoUseCase(
-                recursoGateway,
-                despachoRecursoGateway
-        );
+        var transaccion = new TransactionTemplate(transactionManager);
+        var log = LoggerFactory.getLogger(UseCaseConfig.class);
+
+        return new DespacharRecursoUseCase(recursoGateway, despachoRecursoGateway) {
+            @Override
+            public DespachoRecursoDto despachar(DespacharRecursoCommand command) {
+                return transaccion.execute(estado -> {
+                    var despacho = super.despachar(command);
+
+                    TransactionSynchronizationManager.registerSynchronization(
+                            new TransactionSynchronization() {
+                                @Override
+                                public void afterCommit() {
+                                    try {
+                                        notificacionDespachoGateway.notificarDespacho(
+                                                command.incidenteId(),
+                                                command.recursoId()
+                                        );
+                                    } catch (RestClientException e) {
+                                        log.warn(
+                                                "Despacho confirmado, pero no se pudo notificar. "
+                                                        + "incidenteId={}, recursoId={}",
+                                                command.incidenteId(),
+                                                command.recursoId(),
+                                                e
+                                        );
+                                    }
+                                }
+                            }
+                    );
+
+                    return despacho;
+                });
+            }
+        };
     }
 
     @Bean

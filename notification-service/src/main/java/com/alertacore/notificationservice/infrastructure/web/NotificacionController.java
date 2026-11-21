@@ -1,6 +1,6 @@
-package com.alertacore.notificationservice.Infrastructure;
+package com.alertacore.notificationservice.infrastructure.web;
 
-import com.alertacore.notificationservice.Application.RegistrarDespachoUseCase;
+import com.alertacore.notificationservice.application.RegistrarDespachoUseCase;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,9 @@ public class NotificacionController {
 
     private final RegistrarDespachoUseCase registrarDespacho;
 
-    public NotificacionController(RegistrarDespachoUseCase registrarDespacho) {
+    public NotificacionController(
+            RegistrarDespachoUseCase registrarDespacho
+    ) {
         this.registrarDespacho = registrarDespacho;
     }
 
@@ -22,7 +24,10 @@ public class NotificacionController {
     public RegistrarDespachoUseCase.AvisoRecibido recibir(
             @Valid @RequestBody DespachoRequest request
     ) {
-        return registrarDespacho.ejecutar(request.incidenteId(), request.recursoId());
+        return registrarDespacho.ejecutar(
+                request.incidenteId(),
+                request.recursoId()
+        );
     }
 
     public record DespachoRequest(

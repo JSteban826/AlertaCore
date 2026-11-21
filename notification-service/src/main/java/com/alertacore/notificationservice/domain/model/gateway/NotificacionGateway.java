@@ -1,4 +1,4 @@
-package com.alertacore.notificationservice.Domain;
+package com.alertacore.notificationservice.domain.model.gateway;
 
 import java.util.UUID;
 

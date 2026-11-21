@@ -1,6 +1,6 @@
-package com.alertacore.notificationservice.Infrastructure;
+package com.alertacore.notificationservice.infrastructure.persistence;
 
-import com.alertacore.notificationservice.Domain.NotificacionGateway;
+import com.alertacore.notificationservice.domain.model.gateway.NotificacionGateway;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

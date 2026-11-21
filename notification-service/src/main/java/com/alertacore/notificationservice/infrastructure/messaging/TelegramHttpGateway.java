@@ -1,6 +1,6 @@
-package com.alertacore.notificationservice.Infrastructure;
+package com.alertacore.notificationservice.infrastructure.messaging;
 
-import com.alertacore.notificationservice.Domain.TelegramGateway;
+import com.alertacore.notificationservice.domain.model.gateway.TelegramGateway;
 
 import java.io.IOException;
 import java.net.URI;

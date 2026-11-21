@@ -1,9 +1,9 @@
 package com.alertacore.notificationservice.application;
 
-import com.alertacore.notificationservice.domain.ConsultaDespachoGateway;
-import com.alertacore.notificationservice.domain.EmailGateway;
-import com.alertacore.notificationservice.domain.NotificacionGateway;
-import com.alertacore.notificationservice.domain.TelegramGateway;
+import com.alertacore.notificationservice.domain.model.gateway.ConsultaDespachoGateway;
+import com.alertacore.notificationservice.domain.model.gateway.EmailGateway;
+import com.alertacore.notificationservice.domain.model.gateway.NotificacionGateway;
+import com.alertacore.notificationservice.domain.model.gateway.TelegramGateway;
 
 import java.util.UUID;
 

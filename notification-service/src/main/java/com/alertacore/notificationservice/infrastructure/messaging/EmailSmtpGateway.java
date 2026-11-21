@@ -1,6 +1,6 @@
 package com.alertacore.notificationservice.infrastructure.messaging;
 
-import com.alertacore.notificationservice.domain.EmailGateway;
+import com.alertacore.notificationservice.domain.model.gateway.EmailGateway;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 

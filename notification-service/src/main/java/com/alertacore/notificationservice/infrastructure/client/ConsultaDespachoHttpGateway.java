@@ -1,6 +1,6 @@
 package com.alertacore.notificationservice.infrastructure.client;
 
-import com.alertacore.notificationservice.domain.ConsultaDespachoGateway;
+import com.alertacore.notificationservice.domain.model.gateway.ConsultaDespachoGateway;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 

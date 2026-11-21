@@ -1,4 +1,4 @@
-package com.alertacore.notificationservice.Domain;
+package com.alertacore.notificationservice.domain;
 
 public interface TelegramGateway {
 

@@ -44,14 +44,25 @@ public class UseCaseConfig {
         );
     }
 
+
     @Bean
-    @ConditionalOnProperty(name = "spring.mail.host")
+    @ConditionalOnProperty(
+            name = "notificaciones.email.habilitado",
+            havingValue = "true"
+    )
     public EmailGateway emailGateway(
             JavaMailSender mailSender,
-            @Value("${notificaciones.email.remitente}") String remitente
+            @Value("${notificaciones.email.remitente:}") String remitente
     ) {
-        return new EmailSmtpGateway(mailSender, remitente);
+        if (remitente.isBlank()) {
+            throw new IllegalStateException(
+                    "El correo esta habilitado, pero falta configurar el remitente."
+            );
+        }
+
+        return new EmailSmtpGateway(mailSender, remitente.trim());
     }
+
     @Bean
     @ConditionalOnProperty(
             name = "notificaciones.telegram.habilitado",

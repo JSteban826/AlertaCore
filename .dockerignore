@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Resultados de Maven
+**/target
+
+# Archivos de Eclipse
+**/.classpath
+**/.project
+**/.settings
+
+# Logs
+**/*.log
+logs
+
+# Archivos locales y secretos
+.env
+.env.*
+!.env.example
+**/application-local.properties
+
+# Archivos temporales
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker Compose local alternativo
+docker-compose.override.yml

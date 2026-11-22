@@ -150,6 +150,11 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-123456}
 
+
+      # micros
+      INCIDENT_SERVICE_URL: http://incident-service:8081
+      RESOURCE_SERVICE_URL: http://resource-service:8082
+
       # Correo electronico
       SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-smtp.gmail.com}
       SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
